@@ -18,6 +18,7 @@ exports.create = (req, res) => {
     // Save Note in the database
     note.save()
     .then(data => {
+        console.log(data)
         res.send(data);
     }).catch(err => {
         res.status(500).send({
@@ -114,3 +115,29 @@ exports.delete = (req, res) => {
         });
     });
 };
+
+export.addChild = (req,res) => {
+    const note = new Note({
+        title:  "Untitled Note", 
+        content: ""
+        parent: req.params.noteId
+    });
+
+    var parent_id = req.params.noteId
+
+    note.save()
+    .then(data => {
+        res.send(data);
+        console.log(data)
+        var child_id = data.id
+        Note.findByIdAndUpdate(parent_id, {
+        children : child_id
+        }, {new: true})
+    })
+    .catch(err => {
+        res.status(500).send({
+            message: err.message || "Some error occurred while creating the Note."
+        });
+    });
+
+}

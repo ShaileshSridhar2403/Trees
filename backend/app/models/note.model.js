@@ -3,8 +3,8 @@ const mongoose = require('mongoose');
 const NoteSchema = mongoose.Schema({
     title: String,
     content: String,
-    parent : Schema.Types.ObjectId,
-    children : Schema.Types.ObjectId
+    parent : String,
+    children : String	
 }, {
     timestamps: true
 });
