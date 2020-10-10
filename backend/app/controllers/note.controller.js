@@ -116,20 +116,62 @@ exports.delete = (req, res) => {
     });
 };
 
-export.addChild = (req,res) => {
+exports.addChild = (req,res) => {
     const note = new Note({
         title:  "Untitled Note", 
-        content: ""
+        content: "",
         parent: req.params.noteId
     });
 
     var parent_id = req.params.noteId
+    var children_array;
+    Note.findById(parent_id).then(data =>{
+        children_array =  data.children_array
+    }
 
+    )
     note.save()
     .then(data => {
         res.send(data);
         console.log(data)
         var child_id = data.id
+        children_array.push(child_id)
+        Note.findByIdAndUpdate(parent_id, {
+        children : children_array
+        }, {new: true})
+    })
+    .catch(err => {
+        res.status(500).send({
+            message: err.message || "Some error occurred while creating the Note."
+        });
+    });
+
+}
+
+exports.addSibling = (req,res) => {
+    const note = new Note({
+        title:  "Untitled Note", 
+        content: "",
+    });
+
+    var parent_id;
+
+    Note.findById(req.params.noteId).then(data =>{
+        parent_id= data.id
+    }
+
+    var children_array;
+    Note.findById(parent_id).then(data =>{
+        children_array =  data.children_array
+    }
+
+    )
+    note.save()
+    .then(data => {
+        res.send(data);
+        console.log(data)
+        var child_id = data.id
+        
         Note.findByIdAndUpdate(parent_id, {
         children : child_id
         }, {new: true})
