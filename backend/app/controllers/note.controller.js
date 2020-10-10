@@ -130,28 +130,25 @@ exports.addChild = (req,res) => {
 
     var parent_id = req.params.noteId
     var children_array;
-    Note.findById(parent_id).then(data =>{
-        children_array =  data.children_array
+    Note.findById(parent_id).then(data => {
+        children_array =  data.children
     })
 
     note.save()
     .then(data => {
-        res.send(data);
         var child_id = data.id
-        console.log(children_array)
         children_array.push(child_id)
-        console.log(children_array)
         Note.findByIdAndUpdate(parent_id, {
-        children : children_array
+            children: children_array
         }, {new: true})
+        res.send(data);
     })
     .catch(err => {
         res.status(500).send({
             message: err.message || "Some error occurred while creating the Note."
         });
     });
-
-}
+};
 
 exports.addSibling = (req,res) => {
     const note = new Note({
@@ -160,30 +157,27 @@ exports.addSibling = (req,res) => {
     });
 
     var parent_id;
-
     Note.findById(req.params.noteId).then(data =>{
         parent_id = data.id
     });
 
     var children_array;
     Note.findById(parent_id).then(data =>{
-        children_array =  data.children_array
+        children_array =  data.children
     });
 
     note.save()
     .then(data => {
-        res.send(data);
-        console.log(data)
         var child_id = data.id
-        
+        children_array.push(child_id)
         Note.findByIdAndUpdate(parent_id, {
-        children : child_id
+            children: children_array
         }, {new: true})
+        res.send(data);
     })
     .catch(err => {
         res.status(500).send({
             message: err.message || "Some error occurred while creating the Note."
         });
     });
-
-}
+};
