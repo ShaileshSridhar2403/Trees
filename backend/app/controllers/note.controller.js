@@ -20,7 +20,8 @@ exports.create = (req, res) => {
     .then(data => {
         console.log(data)
         res.send(data);
-    }).catch(err => {
+    })
+    .catch(err => {
         res.status(500).send({
             message: err.message || "Some error occurred while creating the Note."
         });
@@ -32,7 +33,8 @@ exports.findAll = (req, res) => {
     Note.find()
     .then(notes => {
         res.send(notes);
-    }).catch(err => {
+    })
+    .catch(err => {
         res.status(500).send({
             message: err.message || "Some error occurred while retrieving notes."
         });
@@ -49,7 +51,8 @@ exports.findOne = (req, res) => {
             });            
         }
         res.send(note);
-    }).catch(err => {
+    })
+    .catch(err => {
         if(err.kind === 'ObjectId') {
             return res.status(404).send({
                 message: "Note not found with id " + req.params.noteId
@@ -82,7 +85,8 @@ exports.update = (req, res) => {
             });
         }
         res.send(note);
-    }).catch(err => {
+    })
+    .catch(err => {
         if(err.kind === 'ObjectId') {
             return res.status(404).send({
                 message: "Note not found with id " + req.params.noteId
@@ -104,7 +108,8 @@ exports.delete = (req, res) => {
             });
         }
         res.send({message: "Note deleted successfully!"});
-    }).catch(err => {
+    })
+    .catch(err => {
         if(err.kind === 'ObjectId' || err.name === 'NotFound') {
             return res.status(404).send({
                 message: "Note not found with id " + req.params.noteId
@@ -127,15 +132,15 @@ exports.addChild = (req,res) => {
     var children_array;
     Note.findById(parent_id).then(data =>{
         children_array =  data.children_array
-    }
+    })
 
-    )
     note.save()
     .then(data => {
         res.send(data);
-        console.log(data)
         var child_id = data.id
+        console.log(children_array)
         children_array.push(child_id)
+        console.log(children_array)
         Note.findByIdAndUpdate(parent_id, {
         children : children_array
         }, {new: true})
@@ -157,15 +162,14 @@ exports.addSibling = (req,res) => {
     var parent_id;
 
     Note.findById(req.params.noteId).then(data =>{
-        parent_id= data.id
-    }
+        parent_id = data.id
+    });
 
     var children_array;
     Note.findById(parent_id).then(data =>{
         children_array =  data.children_array
-    }
+    });
 
-    )
     note.save()
     .then(data => {
         res.send(data);

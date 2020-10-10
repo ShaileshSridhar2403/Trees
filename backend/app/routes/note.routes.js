@@ -16,7 +16,7 @@ module.exports = (app) => {
     // Delete a Note with noteId
     app.delete('/notes/:noteId', notes.delete);
 
-    app.get('/notes/addSibling/:noteId',notes.addSibling);
+    // app.get('/notes/addSibling/:noteId', notes.addSibling);
 
-    app.get('/notes/addChild/:noteId',notes.addChild);
+    app.get('/notes/addChild/:noteId', notes.addChild);
 }

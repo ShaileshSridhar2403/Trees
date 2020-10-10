@@ -4,7 +4,8 @@ const NoteSchema = mongoose.Schema({
     title: String,
     content: String,
     parent : String,
-    children : String	
+    children : [String],
+    sibling: [String]
 }, {
     timestamps: true
 });
