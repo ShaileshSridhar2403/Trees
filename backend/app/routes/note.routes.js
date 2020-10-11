@@ -20,5 +20,5 @@ module.exports = (app) => {
     app.get('/notes/addChild/:noteId', notes.addChild);
 
     // Add Sibling Note for the note with id = noteId
-    // app.get('/notes/addSibling/:noteId', notes.addSibling);
+    app.get('/notes/addSibling/:noteId', notes.addSibling);
 }

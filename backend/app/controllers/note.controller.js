@@ -141,7 +141,9 @@ exports.addChild = (req,res) => {
         Note.findByIdAndUpdate(parent_id, {
             children: children_array
         }, {new: true})
-        res.send(data);
+        .then(() => {
+            res.send(data);
+        });
     })
     .catch(err => {
         res.status(500).send({
@@ -151,14 +153,15 @@ exports.addChild = (req,res) => {
 };
 
 exports.addSibling = (req,res) => {
-    const note = new Note({
-        title:  "Untitled Note", 
-        content: "",
-    });
-
     var parent_id;
     Note.findById(req.params.noteId).then(data =>{
         parent_id = data.id
+    });
+
+    const note = new Note({
+        title:  "Untitled Note", 
+        content: "",
+        parent: parent_id
     });
 
     var children_array;
@@ -173,7 +176,9 @@ exports.addSibling = (req,res) => {
         Note.findByIdAndUpdate(parent_id, {
             children: children_array
         }, {new: true})
-        res.send(data);
+        .then(() => {
+            res.send(data);
+        });
     })
     .catch(err => {
         res.status(500).send({
