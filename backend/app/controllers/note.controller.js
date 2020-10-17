@@ -152,79 +152,33 @@ exports.addChild = (req,res) => {
 };
 
 exports.addSibling = (req,res) => {
-    var parent_id;
-    const note_promise = Note.findById(req.params.noteId).exec()
-    note_promise.then(data =>{
-        parent_id = data.id
-    });
-
-    const note = new Note({
-        title:  "Untitled Note", 
-        content: "",
-        parent: parent_id
-    });
-
-    var children_array;
-    const parent_promise = Note.findById(parent_id).exec()
-    parent_promise.then(data =>{
-        children_array =  data.children
-    });
-
-    note.save()
-    .then(data => {
-        var child_id = data.id
-        children_array.push(child_id)
-        Note.findByIdAndUpdate(parent_id, {
-            children: children_array
-        }, {new: true})
-        .then(() => {
-            res.send(data);
+    Note.findById(req.params.noteId).then(data => {
+        var parent_id = data.parent
+        const note = new Note({
+            title:  "Untitled Note", 
+            content: "",
+            parent: parent_id
         });
-    })
-    .catch(err => {
-        res.status(500).send({
-            message: err.message || "Some error occurred while creating the Note."
+
+        Note.findById(parent_id).then(data => {
+            var children_array =  data.children
+
+            note.save()
+            .then(data => {
+                var child_id = data.id
+                children_array.push(child_id)
+                Note.findByIdAndUpdate(parent_id, {
+                    children: children_array
+                }, {new: true})
+                .then(() => {
+                    res.send(data);
+                });
+            })
+            .catch(err => {
+                res.status(500).send({
+                    message: err.message || "Some error occurred while creating the Note."
+                });
+            });
         });
     });
 };
-
-// exports.addSibling = (req,res) => {
-//     var parent_id;
-//     var children_array;
-//     return Note.findById(req.params.noteId)
-//     .exec()
-//     .then(data =>{
-//         console.log("current node", data)
-//         parent_id = data.parent
-//         Note.findById(parent_id).then(data =>{
-//             console.log("parent node", data)
-//             children_array =  data.children
-//         });
-//     });
-//     console.log("children array", children_array)
-//     console.log("parent id", parent_id)
-//     const note = new Note({
-//         title:  "Untitled Note", 
-//         content: "",
-//         parent: parent_id
-//     });
-
-//     note.save()
-//     .then(data => {
-//         var child_id = data.id
-//         console.log("children array", children_array)
-//         children_array.push(child_id)
-//         console.log("parent id", parent_id)
-//         Note.findByIdAndUpdate(parent_id, {
-//             children: children_array
-//         }, {new: true})
-//         .then(() => {
-//             res.send(data);
-//         });
-//     })
-//     .catch(err => {
-//         res.status(500).send({
-//             message: err.message || "Some error occurred while creating the Note."
-//         });
-//     });
-// };
