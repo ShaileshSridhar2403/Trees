@@ -28,7 +28,12 @@ class AllNotes extends React.Component {
     .delete("http://localhost:8000/notes/" + variables._id)
     .then(() => {
       this.setState({
-        allNotes: this.state.allNotes.filter(note => note._id !== variables._id)})
+        allNotes: this.state.allNotes.filter(note => note._id !== variables._id)
+      })
+
+      this.props.history.push("/newnote");  
+      this.props.history.push("/")
+      
     })
     .catch(err => {
       console.log(err);

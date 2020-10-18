@@ -97,27 +97,79 @@ exports.update = (req, res) => {
     });
 };
 
+
 // Delete a note with the specified noteId in the request
-exports.delete = (req, res) => {
-    Note.findByIdAndRemove(req.params.noteId)
+function deleteSubtree(id){
+    Note.findById(id)
+
     .then(note => {
-        if(!note) {
-            return res.status(404).send({
-                message: "Note not found with id " + req.params.noteId
-            });
+        if (!note){
+            return
         }
-        res.send({message: "Note deleted successfully!"});
+
+        var children_array = note.children;
+        Note.findByIdAndRemove(id)
+        .then(note => {
+        // if(!note) {
+        //     return res.status(404).send({
+        //         message: "Note not found with id " + req.params.noteId
+        //     });
+        // }
+        // res.send({message: "Note deleted successfully!"});
     })
     .catch(err => {
-        if(err.kind === 'ObjectId' || err.name === 'NotFound') {
-            return res.status(404).send({
-                message: "Note not found with id " + req.params.noteId
-            });                
-        }
-        return res.status(500).send({
-            message: "Could not delete note with id " + req.params.noteId
-        });
+        console.log(err)
     });
+   
+        if (children_array.length !=0)
+            for(var i = children_array.length-1;i>=0;i--)
+                deleteSubtree(children_array[i])
+    
+    
+    }).catch(err =>{
+        console.log(err)
+    })
+
+    
+    
+}
+
+// Delete a note with the specified noteId in the request
+exports.delete = (req, res) => {
+    deleteSubtree(req.params.noteId)
+    Note.findById(req.params.noteId)
+    .then( note =>{
+        Note.update({ _id: note.parent }, { $pull: { children: req.params.noteId } })
+        .catch(err =>{
+            console.log("Delete Error")
+        })
+
+    })
+    
+    
+    //NEED TO IMPROVE ERROR HANDLING LIKE BELOW
+
+
+    // .then(note => {
+    //     // if(!note) {
+    //     //     return res.status(404).send({
+    //     //         message: "Note not found with id " + req.params.noteId
+    //     //     });
+    //     // }
+    //     res.send({message: "Note deleted successfully!"});
+    // })
+    // .catch(err => {
+    //     if(err.kind === 'ObjectId' || err.name === 'NotFound') {
+    //         return res.status(404).send({
+    //             message: "Note not found with id " + req.params.noteId
+    //         });                
+    //     }
+    //     return res.status(500).send({
+    //         message: "Could not delete note with id " + req.params.noteId
+    //     });
+    // });
+    res.send({message: "Note and its children deleted successfully!"});
+
 };
 
 exports.addChild = (req,res) => {
