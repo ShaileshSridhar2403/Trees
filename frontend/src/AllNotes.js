@@ -26,14 +26,21 @@ class AllNotes extends React.Component {
   deleteNote({variables}) {
     axios
     .delete("http://localhost:8000/notes/" + variables._id)
-    .then(() => {
-      this.setState({
-        allNotes: this.state.allNotes.filter(note => note._id !== variables._id)
+    .then(res => {
+      console.log("deleted", res.message)
+      axios
+      .get("http://localhost:8000/notes")
+      .then(res => {
+        const notes = res.data;
+        this.setState({ 
+          allNotes: notes
+        });
       })
+      // this.setState({
+      //   allNotes: this.state.allNotes.filter(note => (note._id in res.message.deletedArray) === false)
+      // })
 
-      this.props.history.push("/newnote");  
       this.props.history.push("/")
-      
     })
     .catch(err => {
       console.log(err);
