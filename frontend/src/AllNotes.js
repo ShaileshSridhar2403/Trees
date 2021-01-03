@@ -2,6 +2,7 @@ import React from "react";
 import { BsChevronDown } from "react-icons/bs";
 import { BsChevronUp } from "react-icons/bs";
 import { BsCode } from "react-icons/bs";
+import { Container, Col, Row } from "react-bootstrap"
 import { Link } from "react-router-dom";
 import { notify } from "react-notify-toast";
 import axios from "axios";
@@ -83,69 +84,75 @@ class AllNotes extends React.Component {
         <h1 className="page-title">All Notes</h1>
         
         <div className="allnotes-page">
-          <div className="columns is-multiline">
-            {this.state.allNotes.map(note => (
-              <div className="column is-one-third" key={note._id}>
-                <div className="card">
-                  <header className="card-header">
-                    <p className="card-header-title">{note.title}</p>
-                  </header>
-                  <div className="card-content">
-                    <div className="content">
-                      {note.content}
-                      <br />
+          <div>
+            <Container>
+              <Row>
+                {this.state.allNotes.map(note => (
+                  <Col>
+                    <div key={note._id}>
+                      <div className="card">
+                        <header className="card-header">
+                          <p className="card-header-title">{note.title}</p>
+                        </header>
+                        <div className="card-content">
+                          <div className="content">
+                            {note.content}
+                            <br />
+                          </div>
+                        </div>
+                        <footer className="card-footer">
+                          <button
+                            onClick={e => {
+                              e.preventDefault();
+                              this.addChild({ variables: { _id: note._id } });
+                              notify.show("Child note was added successfully", "success");
+                            }}
+                            className="card-footer-item"
+                          >
+                            <BsChevronDown />
+                          </button>
+                          <button
+                            onClick={e => {
+                              e.preventDefault();
+                              this.addSibling({ variables: { _id: note._id } });
+                              notify.show("Sibling note was added successfully", "success");
+                            }}
+                            className="card-footer-item"
+                          >
+                            <BsCode />
+                          </button>
+                          {/* <button
+                            onClick={e => {
+                              e.preventDefault();
+                              this.linkParent({ variables: { _id: note._id } });
+                              notify.show("Note was linked to parent successfully", "success");
+                            }}
+                            className="card-footer-item"
+                          >
+                            <BsChevronUp />
+                          </button> */}
+                        </footer>
+                        <footer className="card-footer">
+                          <Link to={`note/${note._id}`} className="card-footer-item">
+                            Edit
+                          </Link>
+                          <button
+                            onClick={e => {
+                              e.preventDefault();
+                              this.deleteNote({ variables: { _id: note._id } });
+                              notify.show("Note was deleted successfully", "success");
+                            }}
+                            className="card-footer-item"
+                          >
+                            Delete
+                          </button>
+                        </footer>
+                      </div>
                     </div>
-                  </div>
-                  <footer className="card-footer">
-                    <button
-                      onClick={e => {
-                        e.preventDefault();
-                        this.addChild({ variables: { _id: note._id } });
-                        notify.show("Child note was added successfully", "success");
-                      }}
-                      className="card-footer-item"
-                    >
-                      <BsChevronDown />
-                    </button>
-                    <button
-                      onClick={e => {
-                        e.preventDefault();
-                        this.addSibling({ variables: { _id: note._id } });
-                        notify.show("Sibling note was added successfully", "success");
-                      }}
-                      className="card-footer-item"
-                    >
-                      <BsCode />
-                    </button>
-                    {/* <button
-                      onClick={e => {
-                        e.preventDefault();
-                        this.linkParent({ variables: { _id: note._id } });
-                        notify.show("Note was linked to parent successfully", "success");
-                      }}
-                      className="card-footer-item"
-                    >
-                      <BsChevronUp />
-                    </button> */}
-                  </footer>
-                  <footer className="card-footer">
-                    <Link to={`note/${note._id}`} className="card-footer-item">
-                      Edit
-                    </Link>
-                    <button
-                      onClick={e => {
-                        e.preventDefault();
-                        this.deleteNote({ variables: { _id: note._id } });
-                        notify.show("Note was deleted successfully", "success");
-                      }}
-                      className="card-footer-item"
-                    >
-                      Delete
-                    </button>
-                  </footer>
-                </div>
-              </div>
-            ))}
+                  </Col>
+                ))}
+              </Row>
+            </Container>
           </div>
         </div>
       </div>
