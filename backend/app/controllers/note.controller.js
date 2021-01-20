@@ -240,3 +240,69 @@ exports.addSibling = (req,res) => {
         });
     });
 };
+
+exports.getTreeData = (req, res) => {
+
+    /// TODO: Get first id of the mongoose collection
+    Note.findById("5ff1fe6bb172fe1c08d18fbd")
+    .then(note => {
+        var d = driver(note)
+        console.log("hello", d)
+    })
+    res.send({message: "Note and its children gotten successfully!"});
+
+    // Delete a note with the specified noteId in the request
+    function recurseSubtree(id) {
+        console.log("entered recursion")
+        Note.findById(id)
+        .then(note => {
+            console.log(note)
+            if (note.children.length == 0) {
+                console.log("zero children")
+                return new Promise ([])
+            }
+            // var l = []
+            // console.log("not zero children")
+            // note.children.forEach(id => {
+            //     Note.findById(id)
+            //     .then(child_note => {
+            //         var d = {
+            //             "name": child_note.title,
+            //             "size": [100, 100],
+            //             "children": recurseSubtree(id)
+            //         }
+            //         console.log("recurse", d)
+            //         l.push(d)
+            //     })
+            // });
+            // return l
+            return ([])
+        })
+        .catch(err =>{
+            console.log(err)
+        })
+    }
+
+    function driver(note) {
+        var l = []
+        note.children.forEach(id => {
+            
+            Note.findById(id)
+            .then(child_note => {
+                var d = {
+                    "name": child_note.title,
+                    "size": [100, 100],
+                    "children": recurseSubtree(id)
+                }
+                console.log("driver", id)
+                console.log("driver", d)
+                l.push(d)
+            })
+        });
+        return ({
+            "name": "Master",
+            "size": [100, 100],
+            "children": l
+        })
+    }
+}
