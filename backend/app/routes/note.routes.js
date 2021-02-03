@@ -1,5 +1,6 @@
 module.exports = (app) => {
     const notes = require('../controllers/note.controller.js');
+    const links = require('../controllers/links.controller.js');
 
     // Create a new Note
     app.post('/notes', notes.create);
@@ -22,6 +23,12 @@ module.exports = (app) => {
     // Add Sibling Note for the note with id = noteId
     app.get('/notes/addSibling/:noteId', notes.addSibling);
 
-    // Get Tree Data
-    app.get('/note/getTreeData/', notes.getTreeData);
+    // Get Links
+    app.get('/links', links.findAll);
+
+    // Update Links
+    app.put('/links', links.update);
+
+    // Save Links
+    app.post('/links', links.create);
 }

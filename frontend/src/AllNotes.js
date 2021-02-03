@@ -1,3 +1,5 @@
+import axios from "axios";
+import BarChart from "./BarChart"
 import React from "react";
 import { BsChevronDown } from "react-icons/bs";
 import { BsChevronUp } from "react-icons/bs";
@@ -5,23 +7,76 @@ import { BsCode } from "react-icons/bs";
 import { Container, Col, Row } from "react-bootstrap"
 import { Link } from "react-router-dom";
 import { notify } from "react-notify-toast";
-import axios from "axios";
+import { json } from "d3";
 
 
 class AllNotes extends React.Component {
   state = {
     allNotes: [],
+    links: {}
   };
 
+  init() {
+    // there should not be a case when allNotes length is 0 and links is not 0
+    if (this.state.allNotes.length == 0) {
+      axios
+      .post("http://localhost:8000/notes/", {title: "Master", content: "-"})
+      .then(() => {
+        axios
+        .get("http://localhost:8000/notes")
+        .then(res => {
+          const notes = res.data;
+          var rootLink = res.data[0]._id
+          this.setState({ 
+            allNotes: notes,
+          });
+          this.state.links[rootLink] = []
+          console.log("if hello", this.state.links)
+        })
+      })
+    }
+    else {
+      axios
+      .get("http://localhost:8000/links")
+      .then(res => {
+        const links = JSON.parse(res.data[0].links)
+        this.setState({ 
+          links: links,
+        });
+        console.log("else hello", this.state.links)
+      })
+    }
+  }
+
   componentDidMount() {
+    console.log("Mounting")
     axios
     .get("http://localhost:8000/notes")
     .then(res => {
       const notes = res.data;
       this.setState({ 
-        allNotes: notes
+        allNotes: notes,
       });
+      console.log(this.state.allNotes)
     })
+    .then(() => {
+      this.init()
+    })
+  }
+
+  deleteLinks(id) {
+    if (this.state.links[id] === undefined) {
+      return
+    }
+    if (this.state.links[id].length == 0) {
+      delete this.state.links[id]
+    }
+    else {
+      this.state.links[id].forEach(element => {
+        this.deleteLinks(element)
+      });
+      delete this.state.links[id]
+    }
   }
 
   deleteNote({variables}) {
@@ -36,6 +91,16 @@ class AllNotes extends React.Component {
         this.setState({ 
           allNotes: notes
         });
+        for (const [key, value] of Object.entries(this.state.links)) {
+          if (this.state.links[key].includes(variables._id)) {
+            const index = this.state.links[key].indexOf(variables._id)
+            if (index > -1) {
+              this.state.links[key].splice(index, 1)
+              break
+            }
+          }
+        }
+        this.deleteLinks(variables._id)
       })
       // this.setState({
       //   allNotes: this.state.allNotes.filter(note => (note._id in res.message.deletedArray) === false)
@@ -46,6 +111,7 @@ class AllNotes extends React.Component {
     .catch(err => {
       console.log(err);
     });
+    console.log(this.state.links)
   }
 
   addChild({variables}) {
@@ -56,11 +122,16 @@ class AllNotes extends React.Component {
       this.setState({ 
         allNotes: this.state.allNotes.concat([newChild])
       });
+      console.log("Adding child", this.state.links, variables._id)
+      this.state.links[variables._id].push(newChild._id)
+      this.state.links[newChild._id] = []
+      console.log("Child added", this.state.links, variables._id)
       this.props.history.push("/");
     })
     .catch(err => {
       console.log(err);
     });
+    console.log(this.state.links)
   }
 
   addSibling({variables}) {
@@ -71,13 +142,68 @@ class AllNotes extends React.Component {
       this.setState({ 
         allNotes: this.state.allNotes.concat([newSibling])
       });
+      for (const [key, value] of Object.entries(this.state.links)) {
+        if (this.state.links[key].includes(variables._id)) {
+          console.log("Adding sibling", this.state.links, variables._id)
+          this.state.links[key].push(newSibling._id)
+          this.state.links[newSibling._id] = []
+          console.log("Sibling added", this.state.links, variables._id)
+          break
+        }
+      }
       this.props.history.push("/");
     })
     .catch(err => {
       console.log(err);
     });
+    console.log(this.state.links)
   }
+
+  // driver function
+  // populateTree() {
+  //   var l = []
+  //   this.state.allNotes[0].children.forEach
+  //   return ({
+  //     "name": "Master",
+  //     "size": [100, 100],
+  //     // "children": recurseTree(
+  //   })
+  // }
+
+  // recursive function
+  // recurseTree(note) {
+  //   if (note.children.length == 0){
+  //     return []
+  //   }
+  //   var l = []
+  //   note.children.forEach(element => {
+  //     var d = {
+  //       "name": element.title,
+  //       "size": [100, 100],
+  //       "children": this.recurseTree(element)
+  //     }      
+  //     l.push(d)
+  //   });
+  //   return (l)
+  // }
+
   
+  // treeData = ({
+  //   "name": "5ff1fe6bb172fe1c08d18fbd",
+  //   "size": [100,100],
+  //   "children": [
+
+  //   ]
+  // })
+
+  componentWillUnmount() {
+    axios
+    .post("http://localhost:8000/links", JSON.stringify(this.state.links))
+    .then(res => {
+      console.log(res.data)
+    })
+  }
+
   render() {
     return (
       <div className="container m-t-20">
@@ -85,6 +211,19 @@ class AllNotes extends React.Component {
         
         <div className="allnotes-page">
           <div>
+            <button
+              onClick={e => {
+                e.preventDefault();
+                console.log(this.state.links)
+                axios
+                .post("http://localhost:8000/links", {links: JSON.stringify(this.state.links)})
+                .then(res => {
+                  console.log("saving", res.data)
+                })
+              }}
+            >
+              Save
+            </button>
             <Container>
               <Row>
                 {this.state.allNotes.map(note => (
@@ -156,6 +295,12 @@ class AllNotes extends React.Component {
           </div>
         </div>
       </div>
+      // NEW UI STARTS
+      // <div className="App">
+      //   <header className="App-header">
+      //     <BarChart treeData={this.treeData} />
+      //   </header>
+      // </div>
     );
   };
 }
