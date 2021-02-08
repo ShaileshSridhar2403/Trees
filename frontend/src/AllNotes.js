@@ -13,8 +13,46 @@ import { json } from "d3";
 class AllNotes extends React.Component {
   state = {
     allNotes: [],
-    links: {}
+    links: {},
+    treeData: ({
+      "name": "A",
+      "size": [100,100],
+      "children": [
+        {
+          "name": "BBA","size": [50,50], "children": []
+        }
+      ]
+    })
   };
+
+  // driver function
+  populateTreeData() {
+    var treeData = this.recurseTreeData(this.state.links, Object.keys(this.state.links)[0])
+    this.setState({ 
+      treeData: treeData,
+    });
+  }
+
+  // recursion
+  recurseTreeData(links, id) {
+    if (links[id].length == 0) {
+      return {
+        "name": id,
+        "size": [100, 100],
+        "children": []
+      }
+    }
+
+    var treeData = {
+      "name": id,
+      "size": [100, 100],
+      "children": []
+    }
+    links[id].forEach(childId => {
+      treeData.children.push(this.recurseTreeData(links, childId))
+    });
+    return treeData
+  }
 
   init() {
     // there should not be a case when allNotes length is 0 and links is not 0
@@ -33,6 +71,10 @@ class AllNotes extends React.Component {
           this.state.links[rootLink] = []
           console.log("if hello", this.state.links)
         })
+        .then(() => {
+          console.log("links", this.state.links)
+          this.populateTreeData()
+        })
       })
     }
     else {
@@ -44,6 +86,10 @@ class AllNotes extends React.Component {
           links: links,
         });
         console.log("else hello", this.state.links)
+      })
+      .then(() => {
+        console.log("links", this.state.links)
+        this.populateTreeData()
       })
     }
   }
@@ -105,8 +151,10 @@ class AllNotes extends React.Component {
       // this.setState({
       //   allNotes: this.state.allNotes.filter(note => (note._id in res.message.deletedArray) === false)
       // })
-
-      this.props.history.push("/")
+      .then(() => {
+        this.populateTreeData()
+        this.props.history.push("/")
+      })
     })
     .catch(err => {
       console.log(err);
@@ -126,6 +174,9 @@ class AllNotes extends React.Component {
       this.state.links[variables._id].push(newChild._id)
       this.state.links[newChild._id] = []
       console.log("Child added", this.state.links, variables._id)
+    })
+    .then(() => {
+      this.populateTreeData()
       this.props.history.push("/");
     })
     .catch(err => {
@@ -151,6 +202,9 @@ class AllNotes extends React.Component {
           break
         }
       }
+    })
+    .then(() => {
+      this.populateTreeData()
       this.props.history.push("/");
     })
     .catch(err => {
@@ -158,43 +212,6 @@ class AllNotes extends React.Component {
     });
     console.log(this.state.links)
   }
-
-  // driver function
-  // populateTree() {
-  //   var l = []
-  //   this.state.allNotes[0].children.forEach
-  //   return ({
-  //     "name": "Master",
-  //     "size": [100, 100],
-  //     // "children": recurseTree(
-  //   })
-  // }
-
-  // recursive function
-  // recurseTree(note) {
-  //   if (note.children.length == 0){
-  //     return []
-  //   }
-  //   var l = []
-  //   note.children.forEach(element => {
-  //     var d = {
-  //       "name": element.title,
-  //       "size": [100, 100],
-  //       "children": this.recurseTree(element)
-  //     }      
-  //     l.push(d)
-  //   });
-  //   return (l)
-  // }
-
-  
-  // treeData = ({
-  //   "name": "5ff1fe6bb172fe1c08d18fbd",
-  //   "size": [100,100],
-  //   "children": [
-
-  //   ]
-  // })
 
   componentWillUnmount() {
     axios
@@ -206,101 +223,102 @@ class AllNotes extends React.Component {
 
   render() {
     return (
-      <div className="container m-t-20">
-        <h1 className="page-title">All Notes</h1>
-        
-        <div className="allnotes-page">
-          <div>
-            <button
-              onClick={e => {
-                e.preventDefault();
-                console.log(this.state.links)
-                axios
-                .post("http://localhost:8000/links", {links: JSON.stringify(this.state.links)})
-                .then(res => {
-                  console.log("saving", res.data)
-                })
-              }}
-            >
-              Save
-            </button>
-            <Container>
-              <Row>
-                {this.state.allNotes.map(note => (
-                  <Col>
-                    <div key={note._id}>
-                      <div className="card">
-                        <header className="card-header">
-                          <p className="card-header-title">{note.title}</p>
-                        </header>
-                        <div className="card-content">
-                          <div className="content">
-                            {note.content}
-                            <br />
+      <div className="App">
+        <div className="container m-t-20">
+          <h1 className="page-title">All Notes</h1>
+          
+          <div className="allnotes-page">
+            <div>
+              <button
+                onClick={e => {
+                  e.preventDefault();
+                  console.log(this.state.links)
+                  axios
+                  .post("http://localhost:8000/links", {links: JSON.stringify(this.state.links)})
+                  .then(res => {
+                    console.log("saving", res.data)
+                    console.log("tree data", JSON.stringify(this.state.treeData))
+                  })
+                }}
+              >
+                Save
+              </button>
+              <Container>
+                <Row>
+                  {this.state.allNotes.map(note => (
+                    <Col>
+                      <div key={note._id}>
+                        <div className="card">
+                          <header className="card-header">
+                            <p className="card-header-title">{note.title}</p>
+                          </header>
+                          <div className="card-content">
+                            <div className="content">
+                              {note.content}
+                              <br />
+                            </div>
                           </div>
+                          <footer className="card-footer">
+                            <button
+                              onClick={e => {
+                                e.preventDefault();
+                                this.addChild({ variables: { _id: note._id } });
+                                notify.show("Child note was added successfully", "success");
+                              }}
+                              className="card-footer-item"
+                            >
+                              <BsChevronDown />
+                            </button>
+                            <button
+                              onClick={e => {
+                                e.preventDefault();
+                                this.addSibling({ variables: { _id: note._id } });
+                                notify.show("Sibling note was added successfully", "success");
+                              }}
+                              className="card-footer-item"
+                            >
+                              <BsCode />
+                            </button>
+                            {/* <button
+                              onClick={e => {
+                                e.preventDefault();
+                                this.linkParent({ variables: { _id: note._id } });
+                                notify.show("Note was linked to parent successfully", "success");
+                              }}
+                              className="card-footer-item"
+                            >
+                              <BsChevronUp />
+                            </button> */}
+                          </footer>
+                          <footer className="card-footer">
+                            <Link to={`note/${note._id}`} className="card-footer-item">
+                              Edit
+                            </Link>
+                            <button
+                              onClick={e => {
+                                e.preventDefault();
+                                this.deleteNote({ variables: { _id: note._id } });
+                                notify.show("Note was deleted successfully", "success");
+                              }}
+                              className="card-footer-item"
+                            >
+                              Delete
+                            </button>
+                          </footer>
                         </div>
-                        <footer className="card-footer">
-                          <button
-                            onClick={e => {
-                              e.preventDefault();
-                              this.addChild({ variables: { _id: note._id } });
-                              notify.show("Child note was added successfully", "success");
-                            }}
-                            className="card-footer-item"
-                          >
-                            <BsChevronDown />
-                          </button>
-                          <button
-                            onClick={e => {
-                              e.preventDefault();
-                              this.addSibling({ variables: { _id: note._id } });
-                              notify.show("Sibling note was added successfully", "success");
-                            }}
-                            className="card-footer-item"
-                          >
-                            <BsCode />
-                          </button>
-                          {/* <button
-                            onClick={e => {
-                              e.preventDefault();
-                              this.linkParent({ variables: { _id: note._id } });
-                              notify.show("Note was linked to parent successfully", "success");
-                            }}
-                            className="card-footer-item"
-                          >
-                            <BsChevronUp />
-                          </button> */}
-                        </footer>
-                        <footer className="card-footer">
-                          <Link to={`note/${note._id}`} className="card-footer-item">
-                            Edit
-                          </Link>
-                          <button
-                            onClick={e => {
-                              e.preventDefault();
-                              this.deleteNote({ variables: { _id: note._id } });
-                              notify.show("Note was deleted successfully", "success");
-                            }}
-                            className="card-footer-item"
-                          >
-                            Delete
-                          </button>
-                        </footer>
                       </div>
-                    </div>
-                  </Col>
-                ))}
-              </Row>
-            </Container>
+                    </Col>
+                  ))}
+                </Row>
+              </Container>
+            </div>
           </div>
         </div>
+      {/* // NEW UI STARTS */}
+        <header className="App-header">
+          <BarChart treeData={this.state.treeData} />
+        </header>
       </div>
-      // NEW UI STARTS
-      // <div className="App">
-      //   <header className="App-header">
-      //     <BarChart treeData={this.treeData} />
-      //   </header>
-      // </div>
     );
   };
 }

@@ -22,6 +22,7 @@ function BarChart({ treeData }) {
                 return d.children;
             });
 
+        console.log("Fancy UI", root)
         // Collapse after second level
         root.children.forEach(collapse);
         root.x0 = 0;
