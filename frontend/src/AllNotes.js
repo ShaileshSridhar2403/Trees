@@ -14,15 +14,8 @@ class AllNotes extends React.Component {
   state = {
     allNotes: [],
     links: {},
-    treeData: ({
-      "name": "A",
-      "size": [100,100],
-      "children": [
-        {
-          "name": "BBA","size": [50,50], "children": []
-        }
-      ]
-    })
+    treeData: {}
+     
   };
 
   // driver function
@@ -68,7 +61,9 @@ class AllNotes extends React.Component {
           this.setState({ 
             allNotes: notes,
           });
-          this.state.links[rootLink] = []
+          var links = this.state.links
+          links[rootLink] = []
+          this.setState({links:links})
           console.log("if hello", this.state.links)
         })
         .then(() => {
@@ -213,13 +208,14 @@ class AllNotes extends React.Component {
     console.log(this.state.links)
   }
 
-  componentWillUnmount() {
-    axios
-    .post("http://localhost:8000/links", JSON.stringify(this.state.links))
-    .then(res => {
-      console.log(res.data)
-    })
-  }
+  // componentWillUnmount() {
+  //   console.log("Links",this.state.links)
+  //   axios
+  //   .post("http://localhost:8000/links", JSON.stringify(this.state.links))
+  //   .then(res => {
+  //     console.log(res.data)
+  //   })
+  // } 
 
   render() {
     return (
@@ -232,12 +228,13 @@ class AllNotes extends React.Component {
               <button
                 onClick={e => {
                   e.preventDefault();
-                  console.log(this.state.links)
+                  console.log("links2",this.state.links)
                   axios
                   .post("http://localhost:8000/links", {links: JSON.stringify(this.state.links)})
                   .then(res => {
                     console.log("saving", res.data)
                     console.log("tree data", JSON.stringify(this.state.treeData))
+                    this.props.history.push("/")
                   })
                 }}
               >

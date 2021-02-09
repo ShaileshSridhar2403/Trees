@@ -24,10 +24,11 @@ function BarChart({ treeData }) {
 
         console.log("Fancy UI", root)
         // Collapse after second level
-        root.children.forEach(collapse);
-        root.x0 = 0;
-        root.y0 = 0;
-
+        if (root.children != undefined){
+            root.children.forEach(collapse);
+            root.x0 = 0;
+            root.y0 = 0;
+        }
 
         const flexLayout = flextree.flextree();
 
