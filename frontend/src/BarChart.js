@@ -7,6 +7,8 @@ function BarChart({ treeData }) {
   const ref = useD3(
     (svg) => {
         var width = 960, height = 500;
+        // Remove the old svg
+        d3.selectAll("g > *").remove();
 
         // append the svg object to the body of the page
         const g = svg
@@ -33,7 +35,6 @@ function BarChart({ treeData }) {
         const flexLayout = flextree.flextree();
 
         update(root);
-
         // Collapse the node and all it's children
         function collapse(d) {
             if (d.children) {

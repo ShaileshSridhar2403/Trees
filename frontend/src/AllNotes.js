@@ -14,10 +14,22 @@ class AllNotes extends React.Component {
   state = {
     allNotes: [],
     links: {},
-    treeData: {}
-     
+    treeData: {},
+    titleMap:{}
   };
 
+  saveLinks(){
+    axios
+    .post("http://localhost:8000/links", {links: JSON.stringify(this.state.links)})
+    .then(res => {
+    console.log("saving", res.data)
+    console.log("tree data", JSON.stringify(this.state.treeData))
+    })
+  }
+
+  // updateTitleMap(){
+  //   this.state.allNotes.forEach()
+  // }
   // driver function
   populateTreeData() {
     var treeData = this.recurseTreeData(this.state.links, Object.keys(this.state.links)[0])
@@ -98,14 +110,14 @@ class AllNotes extends React.Component {
       this.setState({ 
         allNotes: notes,
       });
-      console.log(this.state.allNotes)
+      console.log("NOTES",this.state.allNotes)
     })
     .then(() => {
       this.init()
     })
   }
 
-  deleteLinks(id) {
+  deleteLinks(id){
     if (this.state.links[id] === undefined) {
       return
     }
@@ -142,11 +154,15 @@ class AllNotes extends React.Component {
           }
         }
         this.deleteLinks(variables._id)
+        
       })
       // this.setState({
       //   allNotes: this.state.allNotes.filter(note => (note._id in res.message.deletedArray) === false)
       // })
       .then(() => {
+        this.saveLinks()
+      })
+      .then(() =>{
         this.populateTreeData()
         this.props.history.push("/")
       })
@@ -174,6 +190,9 @@ class AllNotes extends React.Component {
       this.populateTreeData()
       this.props.history.push("/");
     })
+    .then(() => {
+      this.saveLinks()
+    })
     .catch(err => {
       console.log(err);
     });
@@ -197,6 +216,9 @@ class AllNotes extends React.Component {
           break
         }
       }
+    })
+    .then(() => {
+      this.saveLinks()
     })
     .then(() => {
       this.populateTreeData()
