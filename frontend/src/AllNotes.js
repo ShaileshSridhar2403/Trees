@@ -27,9 +27,14 @@ class AllNotes extends React.Component {
     })
   }
 
-  // updateTitleMap(){
-  //   this.state.allNotes.forEach()
-  // }
+  updateTitleMap(){
+    var titleMap = {}
+    this.state.allNotes.forEach(note => {
+      titleMap[note._id] = note.title
+      console.log("title",note.title)
+    })
+    this.setState({titleMap:titleMap})
+  }
   // driver function
   populateTreeData() {
     var treeData = this.recurseTreeData(this.state.links, Object.keys(this.state.links)[0])
@@ -42,14 +47,14 @@ class AllNotes extends React.Component {
   recurseTreeData(links, id) {
     if (links[id].length == 0) {
       return {
-        "name": id,
+        "name": this.state.titleMap[id],
         "size": [100, 100],
         "children": []
       }
     }
 
     var treeData = {
-      "name": id,
+      "name": this.state.titleMap[id],
       "size": [100, 100],
       "children": []
     }
@@ -110,7 +115,8 @@ class AllNotes extends React.Component {
       this.setState({ 
         allNotes: notes,
       });
-      console.log("NOTES",this.state.allNotes)
+      this.updateTitleMap()
+      console.log("NOTES",this.state.allNotes,this.state.titleMap)
     })
     .then(() => {
       this.init()
