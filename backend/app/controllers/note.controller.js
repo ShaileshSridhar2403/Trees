@@ -189,24 +189,35 @@ exports.addChild = (req,res) => {
     var children_array;
     Note.findById(parent_id).then(data => {
         children_array =  data.children
-    })
-
-    note.save()
-    .then(data => {
-        var child_id = data.id
-        children_array.push(child_id)
-        Note.findByIdAndUpdate(parent_id, {
-            children: children_array
-        }, {new: true})
-        .then(() => {
-            res.send(data);
+    }).then(()=>{
+        note.save()
+        .then(data => {
+            var child_id = data.id
+            children_array.push(child_id)
+            Note.findByIdAndUpdate(parent_id, {
+                children: children_array
+            }, {new: true})
+            .then(() => {
+                res.send(data);
+            });
+        })
+        .catch(err => {
+            console.log(err.message)
+            res.status(500).send({
+                message: err.message || "Some error occurred while creating the Note."
+            });
         });
-    })
+
+    }
+    )
     .catch(err => {
         res.status(500).send({
             message: err.message || "Some error occurred while creating the Note."
         });
-    });
+    })
+    
+
+ 
 };
 
 exports.addSibling = (req,res) => {
@@ -233,6 +244,7 @@ exports.addSibling = (req,res) => {
                 });
             })
             .catch(err => {
+                console.log(err.message)
                 res.status(500).send({
                     message: err.message || "Some error occurred while creating the Note."
                 });

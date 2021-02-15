@@ -28,6 +28,7 @@ class AllNotes extends React.Component {
   }
 
   updateTitleMap(){
+    console.log("titleCalled")
     var titleMap = {}
     this.state.allNotes.forEach(note => {
       titleMap[note._id] = note.title
@@ -190,11 +191,14 @@ class AllNotes extends React.Component {
       console.log("Adding child", this.state.links, variables._id)
       this.state.links[variables._id].push(newChild._id)
       this.state.links[newChild._id] = []
+      this.setState({links:this.state.links})
       console.log("Child added", this.state.links, variables._id)
     })
     .then(() => {
+      this.updateTitleMap()
       this.populateTreeData()
       this.props.history.push("/");
+      
     })
     .then(() => {
       this.saveLinks()
