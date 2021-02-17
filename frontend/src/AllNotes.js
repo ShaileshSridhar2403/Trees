@@ -231,6 +231,7 @@ class AllNotes extends React.Component {
       this.saveLinks()
     })
     .then(() => {
+      this.updateTitleMap()
       this.populateTreeData()
       this.props.history.push("/");
     })
@@ -257,21 +258,7 @@ class AllNotes extends React.Component {
           
           <div className="allnotes-page">
             <div>
-              <button
-                onClick={e => {
-                  e.preventDefault();
-                  console.log("links2",this.state.links)
-                  axios
-                  .post("http://localhost:8000/links", {links: JSON.stringify(this.state.links)})
-                  .then(res => {
-                    console.log("saving", res.data)
-                    console.log("tree data", JSON.stringify(this.state.treeData))
-                    this.props.history.push("/")
-                  })
-                }}
-              >
-                Save
-              </button>
+              
               <Container>
                 <Row>
                   {this.state.allNotes.map(note => (
