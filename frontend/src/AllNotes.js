@@ -32,7 +32,7 @@ class AllNotes extends React.Component {
     var titleMap = {}
     this.state.allNotes.forEach(note => {
       titleMap[note._id] = note.title
-      console.log("title",note.title)
+      console.log("title", note.title)
     })
     this.setState({titleMap:titleMap})
   }
@@ -49,14 +49,16 @@ class AllNotes extends React.Component {
     if (links[id].length == 0) {
       return {
         "name": this.state.titleMap[id],
-        "size": [100, 100],
+        "id": id,
+        "size": [150, 150],
         "children": []
       }
     }
 
     var treeData = {
       "name": this.state.titleMap[id],
-      "size": [100, 100],
+      "id": id,
+      "size": [150, 150],
       "children": []
     }
     links[id].forEach(childId => {

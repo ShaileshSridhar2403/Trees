@@ -6,7 +6,9 @@ import * as flextree from 'd3-flextree'
 function BarChart({ treeData }) {
   const ref = useD3(
     (svg) => {
-        var width = 960, height = 500;
+        var width = window.innerWidth,
+            height = window.innerHeight;
+
         // Remove the old svg
         d3.selectAll("g > *").remove();
 
@@ -26,7 +28,7 @@ function BarChart({ treeData }) {
 
         console.log("Fancy UI", root)
         // Collapse after second level
-        if (root.children != undefined){
+        if (root.children != undefined) {
             root.children.forEach(collapse);
             root.x0 = 0;
             root.y0 = 0;
@@ -87,9 +89,9 @@ function BarChart({ treeData }) {
             // UPDATE
             var nodeUpdate = nodeEnter.merge(node)
                 .attr("fill", "#fff")
-                .attr("stroke", "steelblue")
+                .attr("stroke", "black")
                 .attr("stroke-width", "3px;")
-                .style('font', '12px sans-serif')
+                .style('font', '12px consolas')
 
             // Transition to the proper position for the node
             nodeUpdate.transition()
@@ -101,12 +103,43 @@ function BarChart({ treeData }) {
 
             // Update the node attributes and style
             nodeUpdate.select('circle.node')
-                .attr('r', 25)
+                .attr('r', 50)
                 .style("fill", function(d) {
                     return d._children ? "lightsteelblue" : "#fff";
                 })
-                .attr('cursor', 'pointer');
+                .attr('cursor', 'pointer')
 
+            // Add buttons on hover
+            nodeUpdate.select('circle.node')
+                .on('mouseover', handleMouseOver)
+                .on('mouseout', handleMouseOut)
+
+            // Create Event Handlers for mouse events
+            function handleMouseOver(d, i) {
+
+                console.log("handling in", 'id' + i.data.id)
+                // Add button
+                nodeUpdate.append('circle')
+                    .attr('id', 'id' + i.data.id)
+                    .attr('cx', 40)
+                    .attr('cy', 40)
+                    .attr('r', 15)
+                    .attr('stroke', 'black')
+                    .attr('fill', '#69a3b2')
+                    .on('click', handleOnClick)
+
+            }
+
+            function handleMouseOut(d, i) {
+
+                console.log("handling out", '#' + 'id' + i.data.id)
+                // Remove button
+                nodeUpdate.select('#' + 'id' + i.data.id).remove()
+            }
+
+            function handleOnClick(d, i) {
+                alert(i.data.id)
+            }
 
             // Remove any exiting nodes
             var nodeExit = node.exit().transition()
