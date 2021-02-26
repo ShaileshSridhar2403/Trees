@@ -67,7 +67,7 @@ function BarChart({ treeData }) {
                 .attr("transform", function(d) {
                     return "translate(" + source.x0 + "," + source.y0 + ")";
                 })
-                .on('click', click);
+                .on('dblclick', click);
 
             // Add Circle for the nodes
             nodeEnter.append('circle')
@@ -92,6 +92,7 @@ function BarChart({ treeData }) {
                 .attr("stroke", "black")
                 .attr("stroke-width", "3px;")
                 .style('font', '12px consolas')
+                .on('click', createButton)
 
             // Transition to the proper position for the node
             nodeUpdate.transition()
@@ -109,36 +110,29 @@ function BarChart({ treeData }) {
                 })
                 .attr('cursor', 'pointer')
 
-            // Add buttons on hover
-            nodeUpdate.select('circle.node')
-                .on('mouseover', handleMouseOver)
-                .on('mouseout', handleMouseOut)
-
             // Create Event Handlers for mouse events
-            function handleMouseOver(d, i) {
-
-                console.log("handling in", 'id' + i.data.id)
+            function createButton(d, i) {
                 // Add button
-                nodeUpdate.append('circle')
+                d3.select(this).append('circle')
                     .attr('id', 'id' + i.data.id)
                     .attr('cx', 40)
                     .attr('cy', 40)
-                    .attr('r', 15)
+                    .attr('r', 25)
                     .attr('stroke', 'black')
                     .attr('fill', '#69a3b2')
                     .on('click', handleOnClick)
-
+                d3.select(this)
+                    .on('click', deleteButton)
             }
 
-            function handleMouseOut(d, i) {
-
-                console.log("handling out", '#' + 'id' + i.data.id)
+            function deleteButton(d, i) {
                 // Remove button
-                nodeUpdate.select('#' + 'id' + i.data.id).remove()
+                nodeUpdate.select('#id' + i.data.id).remove()
             }
 
             function handleOnClick(d, i) {
-                alert(i.data.id)
+                alert("clicking")
+                d.stopPropagation()  // Prevent propagation to parent
             }
 
             // Remove any exiting nodes
