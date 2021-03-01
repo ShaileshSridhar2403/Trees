@@ -92,7 +92,7 @@ function BarChart({ treeData }) {
                 .attr("stroke", "black")
                 .attr("stroke-width", "3px;")
                 .style('font', '12px consolas')
-                .on('click', createButton)
+                .on('click', toggleButton)
 
             // Transition to the proper position for the node
             nodeUpdate.transition()
@@ -110,24 +110,26 @@ function BarChart({ treeData }) {
                 })
                 .attr('cursor', 'pointer')
 
-            // Create Event Handlers for mouse events
-            function createButton(d, i) {
-                // Add button
-                d3.select(this).append('circle')
-                    .attr('id', 'id' + i.data.id)
-                    .attr('cx', 40)
-                    .attr('cy', 40)
-                    .attr('r', 25)
-                    .attr('stroke', 'black')
-                    .attr('fill', '#69a3b2')
-                    .on('click', handleOnClick)
-                d3.select(this)
-                    .on('click', deleteButton)
-            }
-
-            function deleteButton(d, i) {
-                // Remove button
-                nodeUpdate.select('#id' + i.data.id).remove()
+            // Create Event Handlers for toggling buttons
+            function toggleButton(d, i) {
+                if (nodeUpdate.select('#button' + i.data.id).empty()) {
+                    // Add button
+                    d3.select(this)
+                        .append('circle')
+                        .attr('id', 'button' + i.data.id)
+                        .attr('cx', 40)
+                        .attr('cy', 40)
+                        .attr('r', 25)
+                        .attr('stroke', 'black')
+                        .attr('fill', '#69a3b2')
+                        .on('click', handleOnClick)
+                }
+                else {
+                    // Delete button
+                    nodeUpdate.selectAll('#button' + i.data.id).remove()
+                    d3.select(this)
+                        .on('click', toggleButton)
+                }
             }
 
             function handleOnClick(d, i) {
