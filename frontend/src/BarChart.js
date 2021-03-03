@@ -6,7 +6,9 @@ import * as flextree from 'd3-flextree'
 function BarChart({ treeData }) {
   const ref = useD3(
     (svg) => {
-        var width = 960, height = 500;
+        var width = window.innerWidth,
+            height = window.innerHeight;
+
         // Remove the old svg
         d3.selectAll("g > *").remove();
 
@@ -26,7 +28,7 @@ function BarChart({ treeData }) {
 
         console.log("Fancy UI", root)
         // Collapse after second level
-        if (root.children != undefined){
+        if (root.children != undefined) {
             root.children.forEach(collapse);
             root.x0 = 0;
             root.y0 = 0;
@@ -65,7 +67,7 @@ function BarChart({ treeData }) {
                 .attr("transform", function(d) {
                     return "translate(" + source.x0 + "," + source.y0 + ")";
                 })
-                .on('click', click);
+                .on('dblclick', click);
 
             // Add Circle for the nodes
             nodeEnter.append('circle')
@@ -87,9 +89,10 @@ function BarChart({ treeData }) {
             // UPDATE
             var nodeUpdate = nodeEnter.merge(node)
                 .attr("fill", "#fff")
-                .attr("stroke", "steelblue")
+                .attr("stroke", "black")
                 .attr("stroke-width", "3px;")
-                .style('font', '12px sans-serif')
+                .style('font', '12px consolas')
+                .on('click', toggleButton)
 
             // Transition to the proper position for the node
             nodeUpdate.transition()
@@ -101,12 +104,38 @@ function BarChart({ treeData }) {
 
             // Update the node attributes and style
             nodeUpdate.select('circle.node')
-                .attr('r', 25)
+                .attr('r', 50)
                 .style("fill", function(d) {
                     return d._children ? "lightsteelblue" : "#fff";
                 })
-                .attr('cursor', 'pointer');
+                .attr('cursor', 'pointer')
 
+            // Create Event Handlers for toggling buttons
+            function toggleButton(d, i) {
+                if (nodeUpdate.select('#button' + i.data.id).empty()) {
+                    // Add button
+                    d3.select(this)
+                        .append('circle')
+                        .attr('id', 'button' + i.data.id)
+                        .attr('cx', 40)
+                        .attr('cy', 40)
+                        .attr('r', 25)
+                        .attr('stroke', 'black')
+                        .attr('fill', '#69a3b2')
+                        .on('click', handleOnClick)
+                }
+                else {
+                    // Delete button
+                    nodeUpdate.selectAll('#button' + i.data.id).remove()
+                    d3.select(this)
+                        .on('click', toggleButton)
+                }
+            }
+
+            function handleOnClick(d, i) {
+                alert("clicking")
+                d.stopPropagation()  // Prevent propagation to parent
+            }
 
             // Remove any exiting nodes
             var nodeExit = node.exit().transition()
