@@ -38,6 +38,8 @@ class AllNotes extends React.Component {
   }
   // driver function
   populateTreeData() {
+    console.log("LINKSSS",this.state.links)
+    if (Object.keys(this.state.links).length == 0)return
     var treeData = this.recurseTreeData(this.state.links, Object.keys(this.state.links)[0])
     this.setState({ 
       treeData: treeData,
@@ -70,6 +72,7 @@ class AllNotes extends React.Component {
   init() {
     // there should not be a case when allNotes length is 0 and links is not 0
     if (this.state.allNotes.length == 0) {
+      console.log("Zero")
       axios
       .post("http://localhost:8000/notes/", {title: "Master", content: "-"})
       .then(() => {
@@ -79,7 +82,7 @@ class AllNotes extends React.Component {
           const notes = res.data;
           var rootLink = res.data[0]._id
           this.setState({ 
-            allNotes: notes,
+            allNotes: notes
           });
           var links = this.state.links
           links[rootLink] = []
@@ -88,6 +91,7 @@ class AllNotes extends React.Component {
         })
         .then(() => {
           console.log("links", this.state.links)
+          this.updateTitleMap()
           this.populateTreeData()
         })
       })
@@ -104,7 +108,9 @@ class AllNotes extends React.Component {
       })
       .then(() => {
         console.log("links", this.state.links)
+        this.updateTitleMap()
         this.populateTreeData()
+        
       })
     }
   }
@@ -139,6 +145,7 @@ class AllNotes extends React.Component {
       });
       delete this.state.links[id]
     }
+    this.setState({links:this.state.links})
   }
 
   deleteNote({variables}) {
@@ -162,18 +169,26 @@ class AllNotes extends React.Component {
             }
           }
         }
-        this.deleteLinks(variables._id)
+        
         
       })
       // this.setState({
       //   allNotes: this.state.allNotes.filter(note => (note._id in res.message.deletedArray) === false)
       // })
       .then(() => {
+        this.deleteLinks(variables._id)
         this.saveLinks()
       })
+      .then(() => {
+        if(this.state.AllNotes === undefined)this.init()
+      })
       .then(() =>{
+        console.log("notess",this.state.AllNotes)
+        this.updateTitleMap()
         this.populateTreeData()
+        console.log("hijij",this.state.titleMap)
         this.props.history.push("/")
+        console.log("notesss",this.state.AllNotes)
       })
     })
     .catch(err => {
@@ -287,16 +302,21 @@ class AllNotes extends React.Component {
                             >
                               <BsChevronDown />
                             </button>
-                            <button
-                              onClick={e => {
-                                e.preventDefault();
-                                this.addSibling({ variables: { _id: note._id } });
-                                notify.show("Sibling note was added successfully", "success");
-                              }}
-                              className="card-footer-item"
-                            >
-                              <BsCode />
-                            </button>
+                            {note._id !=  Object.keys(this.state.links)[0]?
+                                (<button
+                                  onClick={e => {
+                                    e.preventDefault();
+                                    this.addSibling({ variables: { _id: note._id } });
+                                    notify.show("Sibling note was added successfully", "success");
+                                  }}
+                                  className="card-footer-item"
+                                >
+                                  <BsCode />
+                                </button>)
+                              
+                              :
+                              <></>
+                            }
                             {/* <button
                               onClick={e => {
                                 e.preventDefault();
