@@ -8,32 +8,30 @@ class AllNotes extends React.Component {
     allNotes: [],
     links: {},
     treeData: {},
-    titleMap: {}
+    titleMap:{}
   };
 
-  saveLinks() {
+  saveLinks(){
     axios
-      .post("http://localhost:8000/links", { links: JSON.stringify(this.state.links) })
-      .then(res => {
-        console.log("saving", res.data)
-        console.log("tree data", JSON.stringify(this.state.treeData))
-      })
+    .post("http://localhost:8000/links", {links: JSON.stringify(this.state.links)})
+    .then(res => {
+    console.log("saving", res.data)
+    console.log("tree data", JSON.stringify(this.state.treeData))
+    })
   }
 
-  updateTitleMap() {
-    console.log("titleCalled")
+  updateTitleMap(){
     var titleMap = {}
     this.state.allNotes.forEach(note => {
       titleMap[note._id] = note.title
-      console.log("title", note.title)
     })
-    this.setState({ titleMap: titleMap })
+    this.setState({titleMap:titleMap})
   }
-
   // driver function
   populateTreeData() {
+    if (Object.keys(this.state.links).length == 0)return
     var treeData = this.recurseTreeData(this.state.links, Object.keys(this.state.links)[0])
-    this.setState({
+    this.setState({ 
       treeData: treeData,
     });
   }
@@ -65,62 +63,58 @@ class AllNotes extends React.Component {
     // there should not be a case when allNotes length is 0 and links is not 0
     if (this.state.allNotes.length == 0) {
       axios
-        .post("http://localhost:8000/notes/", { title: "Master", content: "-" })
-        .then(() => {
-          axios
-            .get("http://localhost:8000/notes")
-            .then(res => {
-              const notes = res.data;
-              var rootLink = res.data[0]._id
-              this.setState({
-                allNotes: notes,
-              });
-              var links = this.state.links
-              links[rootLink] = []
-              this.setState({ links: links })
-              console.log("if hello", this.state.links)
-            })
-            .then(() => {
-              console.log("links", this.state.links)
-              this.populateTreeData()
-            })
+      .post("http://localhost:8000/notes/", {title: "Master", content: "-"})
+      .then(() => {
+        axios
+        .get("http://localhost:8000/notes")
+        .then(res => {
+          const notes = res.data;
+          var rootLink = res.data[0]._id
+          this.setState({ 
+            allNotes: notes
+          });
+          var links = this.state.links
+          links[rootLink] = []
+          this.setState({links:links})
         })
+        .then(() => {
+          this.updateTitleMap()
+          this.populateTreeData()
+        })
+      })
     }
     else {
       axios
-        .get("http://localhost:8000/links")
-        .then(res => {
-          const links = JSON.parse(res.data[0].links)
-          this.setState({
-            links: links,
-          });
-          console.log("else hello", this.state.links)
-        })
-        .then(() => {
-          console.log("links", this.state.links)
-          this.populateTreeData()
-        })
+      .get("http://localhost:8000/links")
+      .then(res => {
+        const links = JSON.parse(res.data[0].links)
+        this.setState({ 
+          links: links,
+        });
+      })
+      .then(() => {
+        this.updateTitleMap()
+        this.populateTreeData()
+      })
     }
   }
 
   componentDidMount() {
-    console.log("Mounting")
     axios
-      .get("http://localhost:8000/notes")
-      .then(res => {
-        const notes = res.data;
-        this.setState({
-          allNotes: notes,
-        });
-        this.updateTitleMap()
-        console.log("NOTES", this.state.allNotes, this.state.titleMap)
-      })
-      .then(() => {
-        this.init()
-      })
+    .get("http://localhost:8000/notes")
+    .then(res => {
+      const notes = res.data;
+      this.setState({ 
+        allNotes: notes,
+      });
+      this.updateTitleMap()
+    })
+    .then(() => {
+      this.init()
+    })
   }
 
-  deleteLinks(id) {
+  deleteLinks(id){
     if (this.state.links[id] === undefined) {
       return
     }
@@ -133,108 +127,101 @@ class AllNotes extends React.Component {
       });
       delete this.state.links[id]
     }
+    this.setState({links:this.state.links})
   }
 
-  deleteNote({ variables }) {
+  deleteNote({variables}) {
     axios
-      .delete("http://localhost:8000/notes/" + variables._id)
+    .delete("http://localhost:8000/notes/" + variables._id)
+    .then(() => {
+      axios
+      .get("http://localhost:8000/notes")
       .then(res => {
-        console.log("deleted", res.message)
-        axios
-          .get("http://localhost:8000/notes")
-          .then(res => {
-            const notes = res.data;
-            this.setState({
-              allNotes: notes
-            });
-            for (const [key, value] of Object.entries(this.state.links)) {
-              if (this.state.links[key].includes(variables._id)) {
-                const index = this.state.links[key].indexOf(variables._id)
-                if (index > -1) {
-                  this.state.links[key].splice(index, 1)
-                  break
-                }
-              }
-            }
-            this.deleteLinks(variables._id)
-
-          })
-          // this.setState({
-          //   allNotes: this.state.allNotes.filter(note => (note._id in res.message.deletedArray) === false)
-          // })
-          .then(() => {
-            this.saveLinks()
-          })
-          .then(() => {
-            this.populateTreeData()
-            this.props.history.push("/")
-          })
-      })
-      .catch(err => {
-        console.log(err);
-      });
-    console.log(this.state.links)
-  }
-
-  addChild({ variables }) {
-    axios
-      .get("http://localhost:8000/notes/addChild/" + variables._id)
-      .then(res => {
-        const newChild = res.data;
-        this.setState({
-          allNotes: this.state.allNotes.concat([newChild])
-        });
-        console.log("Adding child", this.state.links, variables._id)
-        this.state.links[variables._id].push(newChild._id)
-        this.state.links[newChild._id] = []
-        this.setState({ links: this.state.links })
-        console.log("Child added", this.state.links, variables._id)
-      })
-      .then(() => {
-        this.updateTitleMap()
-        this.populateTreeData()
-        this.props.history.push("/");
-
-      })
-      .then(() => {
-        this.saveLinks()
-      })
-      .catch(err => {
-        console.log(err);
-      });
-    console.log(this.state.links)
-  }
-
-  addSibling({ variables }) {
-    axios
-      .get("http://localhost:8000/notes/addSibling/" + variables._id)
-      .then(res => {
-        const newSibling = res.data;
-        this.setState({
-          allNotes: this.state.allNotes.concat([newSibling])
+        const notes = res.data;
+        this.setState({ 
+          allNotes: notes
         });
         for (const [key, value] of Object.entries(this.state.links)) {
           if (this.state.links[key].includes(variables._id)) {
-            console.log("Adding sibling", this.state.links, variables._id)
-            this.state.links[key].push(newSibling._id)
-            this.state.links[newSibling._id] = []
-            console.log("Sibling added", this.state.links, variables._id)
-            break
+            const index = this.state.links[key].indexOf(variables._id)
+            if (index > -1) {
+              this.state.links[key].splice(index, 1)
+              break
+            }
           }
         }
       })
       .then(() => {
+        this.deleteLinks(variables._id)
         this.saveLinks()
       })
       .then(() => {
+        if(this.state.AllNotes === undefined)this.init()
+      })
+      .then(() =>{
         this.updateTitleMap()
         this.populateTreeData()
-        this.props.history.push("/");
+        this.props.history.push("/")
       })
-      .catch(err => {
-        console.log(err);
+    })
+    .catch(err => {
+      console.log(err);
+    });
+  }
+
+  addChild({variables}) {
+    axios
+    .get("http://localhost:8000/notes/addChild/" + variables._id)
+    .then(res => {
+      const newChild = res.data;
+      this.setState({ 
+        allNotes: this.state.allNotes.concat([newChild])
       });
-    console.log(this.state.links)
+      this.state.links[variables._id].push(newChild._id)
+      this.state.links[newChild._id] = []
+      this.setState({links:this.state.links})
+    })
+    .then(() => {
+      this.updateTitleMap()
+      this.populateTreeData()
+      this.props.history.push("/");
+      
+    })
+    .then(() => {
+      this.saveLinks()
+    })
+    .catch(err => {
+      console.log(err);
+    });
+  }
+
+  addSibling({variables}) {
+    axios
+    .get("http://localhost:8000/notes/addSibling/" + variables._id)
+    .then(res => {
+      const newSibling = res.data;
+      this.setState({ 
+        allNotes: this.state.allNotes.concat([newSibling])
+      });
+      for (const [key, value] of Object.entries(this.state.links)) {
+        if (this.state.links[key].includes(variables._id)) {
+          this.state.links[key].push(newSibling._id)
+          this.state.links[newSibling._id] = []
+          break
+        }
+      }
+    })
+    .then(() => {
+      this.saveLinks()
+    })
+    .then(() => {
+      this.updateTitleMap()
+      this.populateTreeData()
+      this.props.history.push("/");
+    })
+    .catch(err => {
+      console.log(err);
+    });
   }
 
   render() {
