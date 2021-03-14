@@ -5,6 +5,9 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import AllNotes from "./AllNotes";
 import NewNote from "./NewNote";
 import EditNote from "./EditNote";
+// import EditorApp from "./editor/App"
+// import EditorComponent from "./editor/editor/editor"
+import RichTextEditor from "./ReactQuilComp";
 import "./App.css";
 
 function App() {
@@ -27,7 +30,8 @@ function App() {
               All Notes
             </Link>
 
-            <Link to="/newnote" className="navbar-item">
+            {/* <Link to="/newnote" className="navbar-item"> */}
+            <Link to="/editorapp" className="navbar-item">
               New Note
             </Link>
           </div>
@@ -36,6 +40,7 @@ function App() {
         <Route exact path="/" component={AllNotes} />
         <Route path="/newnote" component={NewNote} />
         <Route path="/note/:id" component={EditNote} />
+        <Route path="/editorapp" component={RichTextEditor} />
       </div>
     </Router>
   );
