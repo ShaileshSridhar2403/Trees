@@ -1,13 +1,6 @@
 import axios from "axios";
-import BarChart from "./BarChart"
+import GraphUI from "./GraphUI"
 import React from "react";
-import { BsChevronDown } from "react-icons/bs";
-import { BsChevronUp } from "react-icons/bs";
-import { BsCode } from "react-icons/bs";
-import { Container, Col, Row } from "react-bootstrap"
-import { Link } from "react-router-dom";
-import { notify } from "react-notify-toast";
-import { json } from "d3";
 
 
 class AllNotes extends React.Component {
@@ -28,16 +21,15 @@ class AllNotes extends React.Component {
   }
 
   updateTitleMap(){
-    console.log("titleCalled")
     var titleMap = {}
     this.state.allNotes.forEach(note => {
       titleMap[note._id] = note.title
-      console.log("title", note.title)
     })
     this.setState({titleMap:titleMap})
   }
   // driver function
   populateTreeData() {
+    if (Object.keys(this.state.links).length == 0)return
     var treeData = this.recurseTreeData(this.state.links, Object.keys(this.state.links)[0])
     this.setState({ 
       treeData: treeData,
@@ -79,15 +71,14 @@ class AllNotes extends React.Component {
           const notes = res.data;
           var rootLink = res.data[0]._id
           this.setState({ 
-            allNotes: notes,
+            allNotes: notes
           });
           var links = this.state.links
           links[rootLink] = []
           this.setState({links:links})
-          console.log("if hello", this.state.links)
         })
         .then(() => {
-          console.log("links", this.state.links)
+          this.updateTitleMap()
           this.populateTreeData()
         })
       })
@@ -100,17 +91,15 @@ class AllNotes extends React.Component {
         this.setState({ 
           links: links,
         });
-        console.log("else hello", this.state.links)
       })
       .then(() => {
-        console.log("links", this.state.links)
+        this.updateTitleMap()
         this.populateTreeData()
       })
     }
   }
 
   componentDidMount() {
-    console.log("Mounting")
     axios
     .get("http://localhost:8000/notes")
     .then(res => {
@@ -119,7 +108,6 @@ class AllNotes extends React.Component {
         allNotes: notes,
       });
       this.updateTitleMap()
-      console.log("NOTES",this.state.allNotes,this.state.titleMap)
     })
     .then(() => {
       this.init()
@@ -139,13 +127,13 @@ class AllNotes extends React.Component {
       });
       delete this.state.links[id]
     }
+    this.setState({links:this.state.links})
   }
 
   deleteNote({variables}) {
     axios
     .delete("http://localhost:8000/notes/" + variables._id)
-    .then(res => {
-      console.log("deleted", res.message)
+    .then(() => {
       axios
       .get("http://localhost:8000/notes")
       .then(res => {
@@ -162,16 +150,16 @@ class AllNotes extends React.Component {
             }
           }
         }
-        this.deleteLinks(variables._id)
-        
       })
-      // this.setState({
-      //   allNotes: this.state.allNotes.filter(note => (note._id in res.message.deletedArray) === false)
-      // })
       .then(() => {
+        this.deleteLinks(variables._id)
         this.saveLinks()
       })
+      .then(() => {
+        if(this.state.AllNotes === undefined)this.init()
+      })
       .then(() =>{
+        this.updateTitleMap()
         this.populateTreeData()
         this.props.history.push("/")
       })
@@ -179,7 +167,6 @@ class AllNotes extends React.Component {
     .catch(err => {
       console.log(err);
     });
-    console.log(this.state.links)
   }
 
   addChild({variables}) {
@@ -190,11 +177,9 @@ class AllNotes extends React.Component {
       this.setState({ 
         allNotes: this.state.allNotes.concat([newChild])
       });
-      console.log("Adding child", this.state.links, variables._id)
       this.state.links[variables._id].push(newChild._id)
       this.state.links[newChild._id] = []
       this.setState({links:this.state.links})
-      console.log("Child added", this.state.links, variables._id)
     })
     .then(() => {
       this.updateTitleMap()
@@ -208,7 +193,6 @@ class AllNotes extends React.Component {
     .catch(err => {
       console.log(err);
     });
-    console.log(this.state.links)
   }
 
   addSibling({variables}) {
@@ -221,10 +205,8 @@ class AllNotes extends React.Component {
       });
       for (const [key, value] of Object.entries(this.state.links)) {
         if (this.state.links[key].includes(variables._id)) {
-          console.log("Adding sibling", this.state.links, variables._id)
           this.state.links[key].push(newSibling._id)
           this.state.links[newSibling._id] = []
-          console.log("Sibling added", this.state.links, variables._id)
           break
         }
       }
@@ -240,101 +222,13 @@ class AllNotes extends React.Component {
     .catch(err => {
       console.log(err);
     });
-    console.log(this.state.links)
   }
-
-  // componentWillUnmount() {
-  //   console.log("Links",this.state.links)
-  //   axios
-  //   .post("http://localhost:8000/links", JSON.stringify(this.state.links))
-  //   .then(res => {
-  //     console.log(res.data)
-  //   })
-  // } 
 
   render() {
     return (
       <div className="App">
-        <div className="container m-t-20">
-          <h1 className="page-title">All Notes</h1>
-          
-          <div className="allnotes-page">
-            <div>
-              
-              <Container>
-                <Row>
-                  {this.state.allNotes.map(note => (
-                    <Col>
-                      <div key={note._id}>
-                        <div className="card">
-                          <header className="card-header">
-                            <p className="card-header-title">{note.title}</p>
-                          </header>
-                          <div className="card-content">
-                            <div className="content">
-                              {note.content}
-                              <br />
-                            </div>
-                          </div>
-                          <footer className="card-footer">
-                            <button
-                              onClick={e => {
-                                e.preventDefault();
-                                this.addChild({ variables: { _id: note._id } });
-                                notify.show("Child note was added successfully", "success");
-                              }}
-                              className="card-footer-item"
-                            >
-                              <BsChevronDown />
-                            </button>
-                            <button
-                              onClick={e => {
-                                e.preventDefault();
-                                this.addSibling({ variables: { _id: note._id } });
-                                notify.show("Sibling note was added successfully", "success");
-                              }}
-                              className="card-footer-item"
-                            >
-                              <BsCode />
-                            </button>
-                            {/* <button
-                              onClick={e => {
-                                e.preventDefault();
-                                this.linkParent({ variables: { _id: note._id } });
-                                notify.show("Note was linked to parent successfully", "success");
-                              }}
-                              className="card-footer-item"
-                            >
-                              <BsChevronUp />
-                            </button> */}
-                          </footer>
-                          <footer className="card-footer">
-                            <Link to={`note/${note._id}`} className="card-footer-item">
-                              Edit
-                            </Link>
-                            <button
-                              onClick={e => {
-                                e.preventDefault();
-                                this.deleteNote({ variables: { _id: note._id } });
-                                notify.show("Note was deleted successfully", "success");
-                              }}
-                              className="card-footer-item"
-                            >
-                              Delete
-                            </button>
-                          </footer>
-                        </div>
-                      </div>
-                    </Col>
-                  ))}
-                </Row>
-              </Container>
-            </div>
-          </div>
-        </div>
-      {/* // NEW UI STARTS */}
         <header className="App-header">
-          <BarChart treeData={this.state.treeData} />
+          <GraphUI parentContext={this} />
         </header>
       </div>
     );
