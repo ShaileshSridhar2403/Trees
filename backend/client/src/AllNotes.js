@@ -13,7 +13,7 @@ class AllNotes extends React.Component {
 
   saveLinks(){
     axios
-    .post("http://localhost:8000/links", {links: JSON.stringify(this.state.links)})
+    .post("api/links", {links: JSON.stringify(this.state.links)})
     .then(res => {
     console.log("saving", res.data)
     console.log("tree data", JSON.stringify(this.state.treeData))
@@ -63,10 +63,10 @@ class AllNotes extends React.Component {
     // there should not be a case when allNotes length is 0 and links is not 0
     if (this.state.allNotes.length == 0) {
       axios
-      .post("http://localhost:8000/notes/", {title: "Master", content: "-"})
+      .post("api/notes/", {title: "Master", content: "-"})
       .then(() => {
         axios
-        .get("http://localhost:8000/notes")
+        .get("api/notes")
         .then(res => {
           const notes = res.data;
           var rootLink = res.data[0]._id
@@ -85,7 +85,7 @@ class AllNotes extends React.Component {
     }
     else {
       axios
-      .get("http://localhost:8000/links")
+      .get("api/links")
       .then(res => {
         const links = JSON.parse(res.data[0].links)
         this.setState({ 
@@ -101,7 +101,7 @@ class AllNotes extends React.Component {
 
   componentDidMount() {
     axios
-    .get("http://localhost:8000/notes")
+    .get("api/notes")
     .then(res => {
       const notes = res.data;
       this.setState({ 
@@ -132,10 +132,10 @@ class AllNotes extends React.Component {
 
   deleteNote({variables}) {
     axios
-    .delete("http://localhost:8000/notes/" + variables._id)
+    .delete("api/notes/" + variables._id)
     .then(() => {
       axios
-      .get("http://localhost:8000/notes")
+      .get("api/notes")
       .then(res => {
         const notes = res.data;
         this.setState({ 
@@ -171,7 +171,7 @@ class AllNotes extends React.Component {
 
   addChild({variables}) {
     axios
-    .get("http://localhost:8000/notes/addChild/" + variables._id)
+    .get("api/notes/addChild/" + variables._id)
     .then(res => {
       const newChild = res.data;
       this.setState({ 
@@ -197,7 +197,7 @@ class AllNotes extends React.Component {
 
   addSibling({variables}) {
     axios
-    .get("http://localhost:8000/notes/addSibling/" + variables._id)
+    .get("api/notes/addSibling/" + variables._id)
     .then(res => {
       const newSibling = res.data;
       this.setState({ 

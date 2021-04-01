@@ -27,7 +27,7 @@ class NewNote extends React.Component {
       content: variables.content,
     }
     axios
-    .post("http://localhost:8000/notes/", newNote)
+    .post("api/notes/", newNote)
     .then(res => {
       this.props.history.push("/");
     })

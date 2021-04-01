@@ -13,7 +13,7 @@ class EditNote extends React.Component {
   
   componentDidMount() {
     axios
-    .get("http://localhost:8000/notes/" + this.props.match.params.id)
+    .get("api/notes/" + this.props.match.params.id)
     .then(res => {
       this.setState({
         _id: res.data._id,
@@ -41,7 +41,7 @@ class EditNote extends React.Component {
       content: variables.content,
     }
     axios
-    .put("http://localhost:8000/notes/" + variables._id, editedNote)
+    .put("api/notes/" + variables._id, editedNote)
     .then(res => {
       console.log(res.data)
       this.props.history.push("/");
