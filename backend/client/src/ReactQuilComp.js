@@ -26,7 +26,7 @@ class RichTextEditor extends React.Component {
     this.quillRef = this.reactQuillRef.getEditor();
 
     axios
-    .get("http://localhost:8000/notes/" + this.props.match.params.id)
+    .get("/api/notes/" + this.props.match.params.id)
     .then(res => {
       this.setState({
         _id: res.data._id,
@@ -45,7 +45,7 @@ class RichTextEditor extends React.Component {
       content: this.state.content,
     }
     axios
-    .put("http://localhost:8000/notes/" + this.state._id, editedNote)
+    .put("/api/notes/" + this.state._id, editedNote)
     .then(res => {
       console.log(res.data)
       // this.props.history.push("/");

@@ -1,4 +1,5 @@
 const cors = require('cors');
+const path = require('path')
 const express = require('express');
 const bodyParser = require('body-parser');
 
@@ -29,11 +30,16 @@ mongoose.connect(dbConfig.url, {
 });
 
 app.use(cors());
+app.use(express.static(path.join(__dirname, 'client/build')))
+app.get('/', (req, res) => {
+  res.sendFile(path.join(__dirname + '/client/build/index.html'))
+})
+
 
 // define a simple route
-app.get('/', (req, res) => {
-    res.json({"message": "Welcome to EasyNotes application. Take notes quickly. Organize and keep track of all your notes."});
-});
+// app.get('/', (req, res) => {
+//     res.json({"message": "Welcome to EasyNotes application. Take notes quickly. Organize and keep track of all your notes."});
+// });
 
 require('./app/routes/note.routes.js')(app);
 
