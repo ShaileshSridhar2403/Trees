@@ -18,7 +18,6 @@ body {
   background: #fefcfc;
 }
 
-/* Snow Theme */
 .app .ql-snow.ql-toolbar {
   display: block;
   background: #eaecec;
@@ -26,7 +25,6 @@ body {
   border-top-right-radius: 0.5em;
 }
 
-/* Bubble Theme */
 .app .ql-bubble .ql-editor {
   border: 1px solid #ccc;
   border-radius: 0.5em;
