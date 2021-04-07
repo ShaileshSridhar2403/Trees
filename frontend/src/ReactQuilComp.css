@@ -1,10 +1,13 @@
 .ql-snow.ql-toolbar {
     display: block;
     background: #eaecec;
-    
   }
   
-.ql-editor {
+  #title .ql-editor{
+    height: 100px;
+  }
+
+  .ql-editor {
     height: 750px;
     overflow-y: scroll;
     resize: vertical;
