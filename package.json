@@ -1,0 +1,44 @@
+{
+  "name": "trees-ui",
+  "version": "0.1.0",
+  "private": true,
+  "dependencies": {
+    "axios": "^0.21.1",
+    "bootstrap": "^4.5.3",
+    "cors": "^2.8.5",
+    "d3": "^6.3.1",
+    "d3-flextree": "^2.1.1",
+    "express": "^4.17.1",
+    "mongoose": "^5.7.1",
+    "react": "^16.9.0",
+    "react-bootstrap": "^1.4.0",
+    "react-dom": "^16.9.0",
+    "react-icons": "^3.11.0",
+    "react-notify-toast": "^0.5.0",
+    "react-router-dom": "^5.1.0",
+    "react-scripts": "3.1.2"
+  },
+  "scripts": {
+    "start-client": "react-scripts start",
+    "build": "react-scripts build && npm install",
+    "test": "react-scripts test",
+    "eject": "react-scripts eject",
+    "start": "node server.js",
+    "heroku-postbuild": "NPM_CONFIG_PRODUCTION=false npm install --prefix client && npm run build --prefix client"
+  },
+  "eslintConfig": {
+    "extends": "react-app"
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  }
+}
