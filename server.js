@@ -35,6 +35,18 @@ app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname + '/client/build/index.html'))
 })
 
+app.get('/editorapp', (req, res) => {
+    res.sendFile(path.join(__dirname + '/client/build/index.html'))
+  })
+  
+
+// app
+
+
+
+// app.get('/editorapp', (req, res) => {
+//     res.sendFile(path.join(__dirname + '/client/build/index.html'))
+//   })
 
 // define a simple route
 // app.get('/', (req, res) => {

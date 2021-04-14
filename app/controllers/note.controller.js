@@ -71,7 +71,7 @@ exports.update = (req, res) => {
             message: "Note content can not be empty"
         });
     }
-
+    // console.log("Update Called",req/params.noteId)
     // Find note and update it with the request body
     Note.findByIdAndUpdate(req.params.noteId, {
         title: req.body.title || "Untitled Note",

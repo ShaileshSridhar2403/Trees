@@ -2,6 +2,8 @@ import { useD3 } from './hooks/useD3';
 import React from "react";
 import * as d3 from 'd3';
 import * as flextree from 'd3-flextree'
+import { propTypes } from 'react-bootstrap/esm/Image';
+import { useHistory } from 'react-router-dom';
 
 
 function GraphUI({ parentContext }) {
@@ -215,8 +217,16 @@ function GraphUI({ parentContext }) {
         }
 
         function handleEdit(d, i) {
+          // const history = useHistory();
+          localStorage.setItem("current_id", i.data.id);
+          
+          console.log("Accessing from graph ui",i.data.id)
           alert("edit")
-          window.location.href = "note/" + i.data.id
+          window.location.href = "/"
+          window.location.href="/editorapp"
+          
+          // history.push("note/" + i.data.id)
+          // history.push("note/" + i.data.id)
           d.stopPropagation()  // Prevent propagation to parent
         }
 
