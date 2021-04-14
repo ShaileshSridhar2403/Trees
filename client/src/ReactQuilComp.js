@@ -23,16 +23,23 @@ class RichTextEditor extends React.Component {
   }
 
   componentDidMount() {
+    console.log("Logging 1")
+    var curr_id = localStorage.getItem("current_id");
+    console.log("Accessing id for",curr_id)
     this.quillRef = this.reactQuillRef.getEditor();
+    // var curr_id = localStorage.getItem("current_id");
 
     axios
-    .get("/api/notes/" + this.props.match.params.id)
+    // .get("/api/notes/" + this.props.match.params.id)
+    .get("/api/notes/" + curr_id)
     .then(res => {
       this.setState({
         _id: res.data._id,
         // title: res.data.title,
         content: res.data.content
       })
+      console.log("contents 2",res.data.content)
+
     })
     .then(() => {
       this.loadText()
@@ -53,6 +60,7 @@ class RichTextEditor extends React.Component {
   }
 
   loadText = () => {
+    console.log("contents",this.state.content)
     this.quillRef.setContents(JSON.parse(this.state.content))
   }
 

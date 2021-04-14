@@ -39,8 +39,8 @@ function App() {
 
         <Route exact path="/" component={AllNotes} />
         <Route path="/newnote" component={NewNote} />
-        <Route path="/note/:id" component={RichTextEditor} />
-        {/* <Route path="/editorapp" component={RichTextEditor} /> */}
+        {/* <Route path="note/:id" component={RichTextEditor} /> */}
+        <Route path="/editorapp" component={RichTextEditor} />
       </div>
     </Router>
   );
