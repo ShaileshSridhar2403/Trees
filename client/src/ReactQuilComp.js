@@ -23,11 +23,8 @@ class RichTextEditor extends React.Component {
   }
 
   componentDidMount() {
-    console.log("Logging 1")
     var curr_id = localStorage.getItem("current_id");
-    console.log("Accessing id for",curr_id)
     this.quillRef = this.reactQuillRef.getEditor();
-    // var curr_id = localStorage.getItem("current_id");
 
     axios
     // .get("/api/notes/" + this.props.match.params.id)
