@@ -20,7 +20,8 @@ class AllNotes extends React.Component {
     })
   }
 
-  updateTitleMap(){
+  updateTitleMap(){  
+     //this maps note ids to titles (plain Text) to allow easy recursion while creating the tree data structure for rendering
     var titleMap = {}
     this.state.allNotes.forEach(note => {
       titleMap[note._id] = note.title
@@ -29,6 +30,7 @@ class AllNotes extends React.Component {
   }
   // driver function
   populateTreeData() {
+    //populates the tree data structure
     if (Object.keys(this.state.links).length == 0)return
     var treeData = this.recurseTreeData(this.state.links, Object.keys(this.state.links)[0])
     this.setState({ 

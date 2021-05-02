@@ -223,7 +223,7 @@ function GraphUI({ parentContext }) {
           console.log("Accessing from graph ui",i.data.id)
           alert("edit")
           window.location.href = "/"
-          window.location.href="/editorapp"
+          window.location.href="/editorapp2"
           
           // history.push("note/" + i.data.id)
           // history.push("note/" + i.data.id)

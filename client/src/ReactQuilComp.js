@@ -9,24 +9,31 @@ import './ReactQuilComp.css'
 class RichTextEditor extends React.Component {
   constructor(props) {
     super(props)
-    this.quillRef = null;      // Quill instance
-    this.reactQuillRef = null; // ReactQuill component
+    this.quillRef_body = null;      // Quill instance
+    this.reactQuillRef_body = null; // ReactQuill component
+
+    this.quillRef_title = null;      // Quill instance
+    this.reactQuillRef_title = null; // ReactQuill component
+
 
     this.state = {
       _id: '',
       title: '',
-      content: '',
+      titleContent :'',
+      bodyContent: '',
       theme: 'snow'
     }
 
-    this.handleChange = this.handleChange.bind(this)
+    this.handleBodyChange = this.handleBodyChange.bind(this)
+    this.handleTitleChange = this.handleTitleChange.bind(this)
   }
 
   componentDidMount() {
     console.log("Logging 1")
     var curr_id = localStorage.getItem("current_id");
     console.log("Accessing id for",curr_id)
-    this.quillRef = this.reactQuillRef.getEditor();
+    this.quillRef_body = this.reactQuillRef_body.getEditor();
+    this.quillRef_title = this.reactQuillRef_title.getEditor();
     // var curr_id = localStorage.getItem("current_id");
 
     axios
@@ -35,8 +42,8 @@ class RichTextEditor extends React.Component {
     .then(res => {
       this.setState({
         _id: res.data._id,
-        // title: res.data.title,
-        content: res.data.content
+        title: res.data.title,
+        bodyContent: res.data.content
       })
       console.log("contents 2",res.data.content)
 
@@ -48,8 +55,8 @@ class RichTextEditor extends React.Component {
 
   updateNote = () => {
     const editedNote = {
-      title: 'title',
-      content: this.state.content,
+      title: this.state.title || 'title' ,
+      content: this.state.bodyContent,
     }
     axios
     .put("/api/notes/" + this.state._id, editedNote)
@@ -60,12 +67,16 @@ class RichTextEditor extends React.Component {
   }
 
   loadText = () => {
-    console.log("contents",this.state.content)
-    this.quillRef.setContents(JSON.parse(this.state.content))
+    console.log("contents loadText",this.state.bodyContent)
+    this.quillRef_body.setContents(JSON.parse(this.state.bodyContent)) //here
+    this.quillRef_title.setContents(JSON.parse(this.state.title))
   }
 
-  handleChange (content, delta, source, editor) {
-    this.state.content = JSON.stringify(editor.getContents())
+  handleBodyChange (content, delta, source, editor) {
+    this.state.bodyContent = JSON.stringify(editor.getContents()) //here
+  }
+  handleTitleChange (content, delta, source, editor) {
+    this.state.title = JSON.stringify(editor.getContents()) //here
   }
 
   // handleThemeChange (newTheme) {
@@ -78,16 +89,17 @@ class RichTextEditor extends React.Component {
     return (
       <div>
         <ReactQuill
+          ref={(el) => { this.reactQuillRef_title = el }}
           id="title"
           theme='bubble'
-          onChange={this.handleChange}
+          onChange={this.handleTitleChange}
           modules={RichTextEditor.modules}
           formats={RichTextEditor.formats}
         />
         <ReactQuill
-          ref={(el) => { this.reactQuillRef = el }}
+          ref={(el) => { this.reactQuillRef_body = el }}
           theme={this.state.theme}
-          onChange={this.handleChange}
+          onChange={this.handleBodyChange}
           modules={RichTextEditor.modules}
           formats={RichTextEditor.formats}
         />
@@ -119,6 +131,7 @@ RichTextEditor.modules = {
      {'indent': '-1'}, {'indent': '+1'}],
     ['link', 'image', 'video'],
     ['clean']
+    
   ],
   clipboard: {
     // toggle to add extra line breaks when pasting HTML:

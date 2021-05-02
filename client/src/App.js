@@ -8,6 +8,7 @@ import EditNote from "./EditNote";
 // import EditorApp from "./editor/App"
 // import EditorComponent from "./editor/editor/editor"
 import RichTextEditor from "./ReactQuilComp";
+import Editor from "./reactQuillComp_custom.js"
 import "./App.css";
 
 function App() {
@@ -31,7 +32,7 @@ function App() {
             </Link>
 
             {/* <Link to="/newnote" className="navbar-item"> */}
-            <Link to="/editorapp" className="navbar-item">
+            <Link to="/editorapp2" className="navbar-item">
               New Note
             </Link>
           </div>
@@ -40,7 +41,8 @@ function App() {
         <Route exact path="/" component={AllNotes} />
         <Route path="/newnote" component={NewNote} />
         {/* <Route path="note/:id" component={RichTextEditor} /> */}
-        <Route path="/editorapp" component={RichTextEditor} />
+        <Route path="/editorapp2" component={RichTextEditor} />
+        <Route path="/editorapp" component={Editor} />
       </div>
     </Router>
   );
