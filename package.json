@@ -1,19 +1,13 @@
 {
   "name": "trees-ui",
-  "homepage": "./",
-  "main": "./electron/main.js",
   "version": "0.1.0",
   "private": true,
   "dependencies": {
     "axios": "^0.21.1",
     "bootstrap": "^4.5.3",
-    "concurrently": "^6.0.2",
     "cors": "^2.8.5",
     "d3": "^6.3.1",
     "d3-flextree": "^2.1.1",
-    "electron": "^12.0.4",
-    "electron-builder": "^22.10.5",
-    "electron-is-dev": "^2.0.0",
     "express": "^4.17.1",
     "mongoose": "^5.7.1",
     "react": "^16.9.0",
@@ -22,17 +16,14 @@
     "react-icons": "^3.11.0",
     "react-notify-toast": "^0.5.0",
     "react-router-dom": "^5.1.0",
-    "react-scripts": "3.1.2",
-    "wait-on": "^5.3.0"
+    "react-scripts": "3.1.2"
   },
   "scripts": {
-    "dev": "concurrently \"npm start\" \"wait-on http://localhost:8000 && electron .\"",
     "start-client": "react-scripts start",
     "start": "node server.js",
     "build": "react-scripts build && npm install",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "ebuild": "npm run build && node_modules/.bin/build && cd client && npm run build",
     "heroku-postbuild": "NPM_CONFIG_PRODUCTION=false npm install --prefix client && npm run build --prefix client"
   },
   "eslintConfig": {
