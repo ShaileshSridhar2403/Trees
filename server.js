@@ -31,23 +31,14 @@ mongoose.connect(dbConfig.url, {
 
 app.use(cors());
 app.use(express.static(path.join(__dirname, 'client/build')))
-app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname + '/client/build/index.html'))
-})
 
+app.get('/', (req, res) => {
+    res.sendFile(path.join(__dirname + '/client/build/index.html'))
+})
 app.get('/editorapp', (req, res) => {
     res.sendFile(path.join(__dirname + '/client/build/index.html'))
-  })
+})
   
-
-// app
-
-
-
-// app.get('/editorapp', (req, res) => {
-//     res.sendFile(path.join(__dirname + '/client/build/index.html'))
-//   })
-
 // define a simple route
 // app.get('/', (req, res) => {
 //     res.json({"message": "Welcome to EasyNotes application. Take notes quickly. Organize and keep track of all your notes."});
