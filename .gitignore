@@ -139,4 +139,7 @@ sketch
 
 
 ### custom ###
-build 
+node_modules
+build
+build-server
+.idea

@@ -1,44 +1,67 @@
 {
-  "name": "trees-ui",
-  "version": "0.1.0",
-  "private": true,
-  "dependencies": {
-    "axios": "^0.21.1",
-    "bootstrap": "^4.5.3",
-    "cors": "^2.8.5",
-    "d3": "^6.3.1",
-    "d3-flextree": "^2.1.1",
-    "express": "^4.17.1",
-    "mongoose": "^5.7.1",
-    "react": "^16.9.0",
-    "react-bootstrap": "^1.4.0",
-    "react-dom": "^16.9.0",
-    "react-icons": "^3.11.0",
-    "react-notify-toast": "^0.5.0",
-    "react-router-dom": "^5.1.0",
-    "react-scripts": "3.1.2"
-  },
+  "name": "electron-react-node-boilerplate",
+  "version": "1.0.0",
+  "description": "An Electron application with React and Node",
+  "main": "./main.js",
+  "homepage": "./",
   "scripts": {
-    "start-client": "react-scripts start",
-    "start": "node server.js",
-    "build": "react-scripts build && npm install",
-    "test": "react-scripts test",
-    "eject": "react-scripts eject",
-    "heroku-postbuild": "NPM_CONFIG_PRODUCTION=false npm install --prefix client && npm run build --prefix client"
+    "start": "concurrently \"npm run react-start\" \"npm run server-start\" \"wait-on http://localhost:8000 && npm run electron-dev\"",
+    "react-build": "react-app-rewired build",
+    "react-start": "cross-env BROWSER=none react-app-rewired start",
+    "server-build": "babel server --out-dir build-server",
+    "server-start": "nodemon --watch server --exec babel-node server/server.js",
+    "electron-dev": "node scripts/dev.js scripts/start.js",
+    "electron-pack": "electron-builder -c.extraMetadata.main='./main.js'",
+    "preelectron-pack": "npm run react-build && npm run server-build"
   },
-  "eslintConfig": {
-    "extends": "react-app"
+  "author": "sm-trees",
+  "devDependencies": {
+    "@babel/cli": "^7.13.16",
+    "@babel/core": "^7.13.16",
+    "@babel/node": "^7.13.13",
+    "@babel/preset-env": "^7.13.15",
+    "concurrently": "^4.1.2",
+    "customize-cra": "^0.2.14",
+    "electron": "^5.0.13",
+    "electron-builder": "^20.44.4",
+    "react-app-rewired": "^2.1.8",
+    "react-scripts": "3.0.1",
+    "wait-on": "^3.3.0"
   },
-  "browserslist": {
-    "production": [
-      ">0.2%",
-      "not dead",
-      "not op_mini all"
+  "dependencies": {
+    "app-module-path": "^2.2.0",
+    "axios": "^0.18.1",
+    "bootstrap": "^4.6.0",
+    "cors": "^2.8.5",
+    "cross-env": "^7.0.3",
+    "d3": "^6.7.0",
+    "d3-flextree": "^2.1.1",
+    "electron-is-dev": "^1.2.0",
+    "express": "^4.17.1",
+    "jquery": "^3.6.0",
+    "mongoose": "^5.12.6",
+    "nodemon": "^1.19.4",
+    "piping": "^1.0.0-rc.4",
+    "popper.js": "^1.16.1",
+    "react": "^16.14.0",
+    "react-bootstrap": "^1.5.2",
+    "react-dom": "^16.14.0",
+    "react-icons": "^4.2.0",
+    "react-notify-toast": "^0.5.1",
+    "react-quill": "^1.3.5",
+    "react-router-dom": "^5.2.0"
+  },
+  "build": {
+    "appId": "com.electron-react-node",
+    "files": [
+      "build/**/**/*",
+      "build-server/**/**/*",
+      "node_modules/**/*",
+      "./main.js"
     ],
-    "development": [
-      "last 1 chrome version",
-      "last 1 firefox version",
-      "last 1 safari version"
-    ]
-  }
+    "directories": {
+      "buildResources": "assets"
+    }
+  },
+  "browserslist": []
 }

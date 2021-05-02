@@ -221,7 +221,7 @@ function GraphUI({ parentContext }) {
           localStorage.setItem("current_id", i.data.id);
           alert("edit")
           // window.location.href = "/"
-          window.location.href = "/editorapp"
+          window.location.href = "http://localhost:8000/editorapp"
           
           // history.push("note/" + i.data.id)
           // history.push("note/" + i.data.id)

@@ -1,26 +1,12 @@
 import React from "react";
-import { notify } from "react-notify-toast";
 import { withRouter } from "react-router-dom";
 import axios from "axios";
 
 
-class EditNote extends React.Component {
+class NewNote extends React.Component {
   state = {
-    _id: '',
     title: '',
     content: ''
-  }
-  
-  componentDidMount() {
-    axios
-    .get("/api/notes" + this.props.match.params.id)
-    .then(res => {
-      this.setState({
-        _id: res.data._id,
-        title: res.data.title,
-        content: res.data.content
-      })
-    })
   }
 
   setTitle(title) {
@@ -35,39 +21,35 @@ class EditNote extends React.Component {
     })
   }
 
-  updateNote({variables}) {
-    const editedNote = {
+  createNote({variables}) {
+    const newNote = {
       title: variables.title,
       content: variables.content,
     }
     axios
-    .put("/api/notes/" + variables._id, editedNote)
+    .post("http://localhost:8000/notes", newNote)
     .then(res => {
-      console.log(res.data)
       this.props.history.push("/");
     })
   }
 
   render() {
+    console.log("render is called")
     return (
       <div className="container m-t-20">
-        <h1 className="page-title">Edit Note</h1>
+        <h1 className="page-title">New Note</h1>
 
         <div className="newnote-page m-t-20">
           <form
             onSubmit={e => {
-              // Stop the form from submitting
               e.preventDefault();
 
-              this.updateNote({
+              this.createNote({
                 variables: {
-                  _id: this.state._id,
                   title: this.state.title,
                   content: this.state.content
                 }
               });
-
-              notify.show("Note was edited successfully", "success");
             }}
           >
             <div className="field">
@@ -75,12 +57,11 @@ class EditNote extends React.Component {
               <div className="control">
                 <input
                   className="input"
-                  type="text"
                   name="title"
+                  type="text"
                   placeholder="Note Title"
-                  defaultValue={this.state.title}
+                  value={this.state.title}
                   onChange={e => this.setTitle(e.target.value)}
-                  required
                 />
               </div>
             </div>
@@ -90,13 +71,11 @@ class EditNote extends React.Component {
               <div className="control">
                 <textarea
                   className="textarea"
-                  rows="10"
                   name="content"
-                  type="text"
+                  rows="10"
                   placeholder="Note Content here..."
                   value={this.state.content}
                   onChange={e => this.setContent(e.target.value)}
-                  required
                 ></textarea>
               </div>
             </div>
@@ -113,4 +92,4 @@ class EditNote extends React.Component {
   };
 }
 
-export default withRouter(EditNote);
+export default withRouter(NewNote);

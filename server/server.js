@@ -1,10 +1,16 @@
+import appModulePath from 'app-module-path';
+import http from 'http';
+
 const cors = require('cors');
 const path = require('path')
 const express = require('express');
 const bodyParser = require('body-parser');
 
+appModulePath.addPath(`${__dirname}`);
+
 // create express app
 const app = express();
+const HTTP = http.Server(app);
 
 // parse application/x-www-form-urlencoded
 app.use(bodyParser.urlencoded({ extended: true }))
@@ -30,15 +36,15 @@ mongoose.connect(dbConfig.url, {
 });
 
 app.use(cors());
-app.use(express.static(path.join(__dirname, 'client/build')))
+app.use(express.static(path.join(__dirname + '/../build')))
 
 app.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname + '/client/build/index.html'))
+    res.sendFile(path.join(__dirnam + '/../build/index.html'))
 })
 app.get('/editorapp', (req, res) => {
-    res.sendFile(path.join(__dirname + '/client/build/index.html'))
+    res.sendFile(path.join(__dirname + '/../build/index.html'))
 })
-  
+
 // define a simple route
 // app.get('/', (req, res) => {
 //     res.json({"message": "Welcome to EasyNotes application. Take notes quickly. Organize and keep track of all your notes."});
@@ -48,6 +54,6 @@ require('./app/routes/note.routes.js')(app);
 
 const port = process.env.PORT || 8000;
 // listen for requests
-app.listen(port, () => {
+HTTP.listen(port, () => {
     console.log(`Server is listening on port ${port}`);
 });
