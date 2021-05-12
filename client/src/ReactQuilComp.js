@@ -35,7 +35,7 @@ class RichTextEditor extends React.Component {
     this.quillRef_body = this.reactQuillRef_body.getEditor();
     this.quillRef_title = this.reactQuillRef_title.getEditor();
     // var curr_id = localStorage.getItem("current_id");
-
+    
     axios
     // .get("/api/notes/" + this.props.match.params.id)
     .get("/api/notes/" + curr_id)
@@ -49,6 +49,7 @@ class RichTextEditor extends React.Component {
 
     })
     .then(() => {
+      // this.removeEnterFunctionalityFromTitle()
       this.loadText()
     })
   }
@@ -66,6 +67,12 @@ class RichTextEditor extends React.Component {
     })
   }
 
+  // removeEnterFunctionalityFromTitle = () => {
+  //   var keyboard = this.quillRef_title.getModule('keyboard');
+  //   console.log("keyboard",keyboard)
+  //   delete keyboard.hotkeys[13];
+  // }
+
   loadText = () => {
     console.log("contents loadText",this.state.bodyContent)
     this.quillRef_body.setContents(JSON.parse(this.state.bodyContent)) //here
@@ -75,14 +82,25 @@ class RichTextEditor extends React.Component {
   handleBodyChange (content, delta, source, editor) {
     this.state.bodyContent = JSON.stringify(editor.getContents()) //here
   }
+
   handleTitleChange (content, delta, source, editor) {
     this.state.title = JSON.stringify(editor.getContents()) //here
+    console.log(this.state.title)
+
+    //Set title length to a maximum value
+    var limit = 10
+    if (editor.getLength() > limit) {
+          this.quillRef_title.deleteText(limit, editor.getLength());
+        }
+    //possibly put an alert here
   }
 
   // handleThemeChange (newTheme) {
   //   if (newTheme === "core") newTheme = null;
   //   this.setState({ theme: newTheme })
   // }
+
+
 
 
   render() {
@@ -93,14 +111,15 @@ class RichTextEditor extends React.Component {
           id="title"
           theme='bubble'
           onChange={this.handleTitleChange}
-          modules={RichTextEditor.modules}
+          modules={RichTextEditor.modules1}
           formats={RichTextEditor.formats}
+          keyboard = {RichTextEditor.titleKeyboard}
         />
         <ReactQuill
           ref={(el) => { this.reactQuillRef_body = el }}
           theme={this.state.theme}
           onChange={this.handleBodyChange}
-          modules={RichTextEditor.modules}
+          modules={RichTextEditor.modules2}
           formats={RichTextEditor.formats}
         />
         {/* <div className="themeSwitcher">
@@ -122,7 +141,44 @@ class RichTextEditor extends React.Component {
  * Quill modules to attach to editor
  * See https://quilljs.com/docs/modules/ for complete options
  */
-RichTextEditor.modules = {
+RichTextEditor.modules1 = {
+  toolbar: [
+    [{ 'header': '1'}, {'header': '2'}, { 'font': [] }],
+    [{size: []}],
+    ['bold', 'italic', 'underline', 'strike', 'blockquote'],
+    [{'list': 'ordered'}, {'list': 'bullet'}, 
+     {'indent': '-1'}, {'indent': '+1'}],
+    ['link', 'image', 'video'],
+    ['clean']
+    
+  ],
+  clipboard: {
+    // toggle to add extra line breaks when pasting HTML:
+    matchVisual: false,
+  },
+  keyboard: {
+    bindings: {
+      handleEnter: {
+        key: 13,
+        handler: () => {
+          // this.quillRef_title.setSelection(null)
+          // this.quillRef_body.focus()
+          // this.quillRef_body.setSelection(0,1)
+          
+        },
+      },
+      "header enter": {
+        key: 13,
+        handler: () => {
+          // this.quillRef_title.setSelection(null)
+          // this.quillRef_body.focus()
+          // this.quillRef_body.setSelection(0,1)},
+        }
+      },
+    },
+  }
+}
+RichTextEditor.modules2 = {
   toolbar: [
     [{ 'header': '1'}, {'header': '2'}, { 'font': [] }],
     [{size: []}],
@@ -149,5 +205,26 @@ RichTextEditor.formats = [
   'list', 'bullet', 'indent',
   'link', 'image', 'video'
 ]
+
+RichTextEditor.titleKeyboard = {
+  keyboard: {
+    bindings: {
+        tab: false,
+        handleEnter: {
+            key: 13,
+            handler: function() {
+                // Do nothing
+            }
+        }
+    }
+}
+}
+
+// quill.on('text-change', function (delta, old, source) {
+//   if (quill.getLength() > 10) {
+//     quill.deleteText(limit, quill.getLength());
+//   }
+// });
+
 
 export default RichTextEditor;
