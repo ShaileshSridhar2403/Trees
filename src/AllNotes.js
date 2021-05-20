@@ -11,25 +11,54 @@ class AllNotes extends React.Component {
     titleMap:{}
   };
 
-  saveLinks(){
+  saveLinks() {
     axios
     .post("http://localhost:8000/links", {links: JSON.stringify(this.state.links)})
     .then(res => {
-    console.log("saving", res.data)
-    console.log("tree data", JSON.stringify(this.state.treeData))
+      console.log("saving", res.data)
+      console.log("links", JSON.stringify(this.state.links))
     })
   }
 
-  updateTitleMap(){
+  parseTitleToPlainText(formattedTitle) {
+    var isValidJSON = true; 
+    try {
+      JSON.parse(formattedTitle)
+    }
+    catch {
+      isValidJSON = false;
+    }
+    if (!isValidJSON)return formattedTitle
+
+    var plaintextTitle = ''
+    console.log(formattedTitle)
+    var entries = JSON.parse(formattedTitle)["ops"]
+    entries.forEach(function(entry){
+      plaintextTitle = plaintextTitle+entry['insert']
+    })
+    plaintextTitle = plaintextTitle.replace(/\n+$/, "")
+    return plaintextTitle
+  }
+
+  updateTitleMap() {  
+    //this maps note ids to titles (plain Text) to allow easy recursion while creating the tree data structure for rendering
     var titleMap = {}
     this.state.allNotes.forEach(note => {
-      titleMap[note._id] = note.title
+      titleMap[note._id] = this.parseTitleToPlainText(note.title)
+      
     })
     this.setState({titleMap:titleMap})
+    console.log("tit;emap",this.state.titleMap)
   }
+
   // driver function
   populateTreeData() {
-    if (Object.keys(this.state.links).length == 0)return
+    console.log("tree data links", this.state.links)
+    if (Object.keys(this.state.links).length == 0) {
+      return
+    }
+
+    console.log(Object.keys(this.state.links)[0])
     var treeData = this.recurseTreeData(this.state.links, Object.keys(this.state.links)[0])
     this.setState({ 
       treeData: treeData,
@@ -69,8 +98,11 @@ class AllNotes extends React.Component {
         axios
         .get("http://localhost:8000/notes")
         .then(res => {
-          const notes = res.data;
-          var rootLink = res.data[0]._id
+          var notes = [];
+          res.data.rows.forEach(note => {
+            notes.push(note.doc)
+          })
+          var rootLink = notes[0]._id
           this.setState({ 
             allNotes: notes
           });
@@ -82,13 +114,17 @@ class AllNotes extends React.Component {
           this.updateTitleMap()
           this.populateTreeData()
         })
+        .then(() => {
+          this.saveLinks()
+        })
       })
     }
     else {
       axios
       .get("http://localhost:8000/links")
       .then(res => {
-        const links = JSON.parse(res.data[0].links)
+        console.log("got links")
+        const links = JSON.parse(res.data.links)
         this.setState({ 
           links: links,
         });
@@ -105,18 +141,22 @@ class AllNotes extends React.Component {
     .get("http://localhost:8000/notes")
     .then(res => {
       console.log("HEYYY")
-      const notes = res.data;
+      var notes = [];
+      res.data.rows.forEach(note => {
+        notes.push(note.doc)
+      })
       this.setState({ 
         allNotes: notes,
       });
       this.updateTitleMap()
     })
     .then(() => {
+      console.log("Initializing")
       this.init()
     })
   }
 
-  deleteLinks(id){
+  deleteLinks(id) {
     if (this.state.links[id] === undefined) {
       return
     }
@@ -129,17 +169,22 @@ class AllNotes extends React.Component {
       });
       delete this.state.links[id]
     }
-    this.setState({links:this.state.links})
+    this.setState({
+      links: this.state.links
+    })
   }
 
   deleteNote({variables}) {
     axios
-    .delete("http://localhost:8000/notes" + variables._id)
+    .delete("http://localhost:8000/notes/" + variables._id)
     .then(() => {
       axios
       .get("http://localhost:8000/notes")
       .then(res => {
-        const notes = res.data;
+        var notes = [];
+        res.data.rows.forEach(note => {
+          notes.push(note.doc)
+        })
         this.setState({ 
           allNotes: notes
         });
@@ -152,18 +197,16 @@ class AllNotes extends React.Component {
             }
           }
         }
-      })
-      .then(() => {
         this.deleteLinks(variables._id)
-        this.saveLinks()
-      })
-      .then(() => {
-        if(this.state.AllNotes === undefined)this.init()
-      })
-      .then(() =>{
         this.updateTitleMap()
         this.populateTreeData()
-        this.props.history.push("/")
+        this.saveLinks()
+        // this.props.history.push("/")
+      })
+      .then(() => {
+        if(this.state.AllNotes === undefined) {
+          this.init()
+        }
       })
     })
     .catch(err => {
@@ -187,7 +230,6 @@ class AllNotes extends React.Component {
       this.updateTitleMap()
       this.populateTreeData()
       this.props.history.push("/");
-      
     })
     .then(() => {
       this.saveLinks()
@@ -214,12 +256,12 @@ class AllNotes extends React.Component {
       }
     })
     .then(() => {
-      this.saveLinks()
-    })
-    .then(() => {
       this.updateTitleMap()
       this.populateTreeData()
       this.props.history.push("/");
+    })
+    .then(() => {
+      this.saveLinks()
     })
     .catch(err => {
       console.log(err);

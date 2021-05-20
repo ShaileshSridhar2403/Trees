@@ -26,8 +26,8 @@ module.exports = (app) => {
     // Get Links
     app.get('/links', links.findAll);
 
-    // Update Links
-    app.put('/links', links.update);
+    // // Update Links
+    // app.put('/links', links.update);
 
     // Save Links
     app.post('/links', links.create);
@@ -60,8 +60,8 @@ module.exports = (app) => {
       // Get Links
       app.get('/api/links', links.findAll);
   
-      // Update Links
-      app.put('/api/links', links.update);
+      // // Update Links
+      // app.put('/api/links', links.update);
   
       // Save Links
       app.post('/api/links', links.create);

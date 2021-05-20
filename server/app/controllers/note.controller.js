@@ -1,4 +1,7 @@
-const Note = require('../models/note.model.js');
+// const Note = require('../models/note.model.js');
+
+var PouchDB = require('pouchdb');
+var notesDb = new PouchDB('notesDb');
 
 // Create and Save a new Note
 exports.create = (req, res) => {
@@ -9,18 +12,17 @@ exports.create = (req, res) => {
         });
     }
 
-    // Create a Note
-    const note = new Note({
+    // Create a Note and Save Note in the database
+    notesDb.post({
         title: req.body.title || "Untitled Note", 
-        content: req.body.content
-    });
-
-    // Save Note in the database
-    note.save()
-    .then(data => {
+        content: req.body.content,
+        parent: "",
+        children: []
+    })
+    .then(function(data) {
         res.send(data);
     })
-    .catch(err => {
+    .catch(function(err) {
         res.status(500).send({
             message: err.message || "Some error occurred while creating the Note."
         });
@@ -29,11 +31,14 @@ exports.create = (req, res) => {
 
 // Retrieve and return all notes from the database.
 exports.findAll = (req, res) => {
-    Note.find()
-    .then(notes => {
+    notesDb.allDocs({
+        include_docs: true,
+        attachments: true
+    }).then(function(notes) {
+        console.log(notes)
         res.send(notes);
     })
-    .catch(err => {
+    .catch(function(err) {
         res.status(500).send({
             message: err.message || "Some error occurred while retrieving notes."
         });
@@ -42,17 +47,12 @@ exports.findAll = (req, res) => {
 
 // Find a single note with a noteId
 exports.findOne = (req, res) => {
-    Note.findById(req.params.noteId)
-    .then(note => {
-        if(!note) {
-            return res.status(404).send({
-                message: "Note not found with id " + req.params.noteId
-            });            
-        }
+    notesDb.get(req.params.noteId)
+    .then(function(note) {
         res.send(note);
     })
-    .catch(err => {
-        if(err.kind === 'ObjectId') {
+    .catch(function(err) {
+        if(err.status == 404) {
             return res.status(404).send({
                 message: "Note not found with id " + req.params.noteId
             });                
@@ -71,30 +71,31 @@ exports.update = (req, res) => {
             message: "Note content can not be empty"
         });
     }
-    // console.log("Update Called",req/params.noteId)
+
     // Find note and update it with the request body
-    Note.findByIdAndUpdate(req.params.noteId, {
-        title: req.body.title || "Untitled Note",
-        content: req.body.content
-    }, {new: true})
-    .then(note => {
-        if(!note) {
-            return res.status(404).send({
-                message: "Note not found with id " + req.params.noteId
+    notesDb.get(req.params.noteId).then(function(doc) {
+        return notesDb.put({
+            _id: req.params.noteId,
+            _rev: doc._rev,
+            title: req.body.title || "Untitled Note",
+            content: req.body.content,
+            parent: doc.parent,
+            children: doc.children
+        })
+        .then(function(note) {
+            res.send(note);
+        })
+        .catch(function(err) {
+            if(err.status == 404) {
+                return res.status(404).send({
+                    message: "Note not found with id " + req.params.noteId
+                });                
+            }
+            return res.status(500).send({
+                message: "Error updating note with id " + req.params.noteId
             });
-        }
-        res.send(note);
-    })
-    .catch(err => {
-        if(err.kind === 'ObjectId') {
-            return res.status(404).send({
-                message: "Note not found with id " + req.params.noteId
-            });                
-        }
-        return res.status(500).send({
-            message: "Error updating note with id " + req.params.noteId
         });
-    });
+    })
 };
 
 // Delete a note with the specified noteId in the request
@@ -109,15 +110,19 @@ exports.delete = (req, res) => {
     // Delete a note with the specified noteId in the request
     function deleteSubtree(id) {
         count = count + 1;
-        Note.findById(id)
-        .then(note => {
-            if (!note) {
-                return
-            }
+        notesDb.get(id, {
+            attachments: true
+        })
+        .then(function(note) {
+            // if (!note) {
+            //     return
+            // }
 
             var children_array = note.children;
-            Note.findByIdAndRemove(id)
-            .then(note => {
+            notesDb.get(id).then(function(doc) {
+                return notesDb.remove(doc);
+            })
+            .then(function(note) {
             // if(!note) {
             //     return res.status(404).send({
             //         message: "Note not found with id " + req.params.noteId
@@ -125,7 +130,7 @@ exports.delete = (req, res) => {
             // }
             // res.send({message: "Note deleted successfully!"});
             })
-            .catch(err => {
+            .catch(function(err) {
                 console.log(err)
             });
 
@@ -140,19 +145,38 @@ exports.delete = (req, res) => {
                 sendDeletedArray();
             }
         })
-        .catch(err =>{
+        .catch(function(err) {
             console.log(err)
+            return
         })
     }
 
-    Note.findById(req.params.noteId)
-    .then(note => {
-        Note.update({ _id: note.parent }, { $pull: { children: req.params.noteId } })
+    notesDb.get(req.params.noteId)
+    .then(function(note) {
+        notesDb.get(note.parent).then(function(parent) {
+            var children_array = parent.children
+            console.log("Children array before deleting", children_array)
+            for (var i = children_array.length - 1; i >= 0; --i) {
+                if (children_array[i] == req.params.noteId) {
+                    children_array.splice(i, 1);
+                    console.log("Children array after deleting", children_array)
+                    break;
+                }
+            }
+            notesDb.put({
+                _id: parent._id,
+                _rev: parent._rev,
+                title: parent.title,
+                content: parent.content,
+                parent: parent.parent,
+                children: children_array
+            })
+        })
         .then(() => {
             deleteSubtree(req.params.noteId)
         })
     })
-    .catch(err =>{
+    .catch(function(err) {
         console.log("Update Error")
     })
 
@@ -179,71 +203,81 @@ exports.delete = (req, res) => {
 };
 
 exports.addChild = (req,res) => {
-    const note = new Note({
-        title:  "Untitled Note", 
-        content: "",
-        parent: req.params.noteId
-    });
-
     var parent_id = req.params.noteId
     var children_array;
-    Note.findById(parent_id).then(data => {
+    notesDb.get(parent_id).then(function(data) {
         children_array =  data.children
-    }).then(()=>{
-        note.save()
-        .then(data => {
+    }).then(() => {
+        notesDb.post({
+            title: "Untitled Note",
+            content: "",
+            parent: parent_id,
+            children: []
+        })
+        .then(function(data) {
             var child_id = data.id
             children_array.push(child_id)
-            Note.findByIdAndUpdate(parent_id, {
-                children: children_array
-            }, {new: true})
+            notesDb.get(parent_id).then(function(doc) {
+                return notesDb.put({
+                    _id: parent_id,
+                    _rev: doc._rev,
+                    title: doc.title,
+                    content: doc.content,
+                    parent: doc.parent,
+                    children: children_array
+                })
+            })
             .then(() => {
-                res.send(data);
+                notesDb.get(data.id).then(function(doc) {
+                    res.send(doc);
+                })
             });
         })
-        .catch(err => {
+        .catch(function(err) {
             console.log(err.message)
             res.status(500).send({
                 message: err.message || "Some error occurred while creating the Note."
             });
         });
-
-    }
-    )
-    .catch(err => {
+    })
+    .catch(function(err) {
         res.status(500).send({
             message: err.message || "Some error occurred while creating the Note."
         });
     })
-    
-
- 
 };
 
 exports.addSibling = (req,res) => {
-    Note.findById(req.params.noteId).then(data => {
+    notesDb.get(req.params.noteId).then(function(data) {
         var parent_id = data.parent
-        const note = new Note({
-            title:  "Untitled Note", 
-            content: "",
-            parent: parent_id
-        });
-
-        Note.findById(parent_id).then(data => {
+        notesDb.get(parent_id).then(function(data) {
             var children_array =  data.children
-
-            note.save()
-            .then(data => {
+            notesDb.post({
+                title: "Untitled Note",
+                content: "",
+                parent: parent_id,
+                children: []
+            })
+            .then(function(data) {
                 var child_id = data.id
                 children_array.push(child_id)
-                Note.findByIdAndUpdate(parent_id, {
-                    children: children_array
-                }, {new: true})
+                notesDb.get(parent_id).then(function(doc) {
+                    return notesDb.put({
+                        _id: parent_id,
+                        _rev: doc._rev,
+                        title: doc.title,
+                        content: doc.content,
+                        parent: doc.parent,
+                        children: children_array
+                    })
+                })
                 .then(() => {
-                    res.send(data);
+                    notesDb.get(data.id).then(function(doc) {
+                        res.send(doc);
+                    })
                 });
             })
-            .catch(err => {
+            .catch(function(err) {
                 console.log(err.message)
                 res.status(500).send({
                     message: err.message || "Some error occurred while creating the Note."
