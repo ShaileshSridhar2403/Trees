@@ -17,6 +17,9 @@ class AllNotes extends React.Component {
     .then(res => {
       console.log("saving", res.data)
       console.log("links", JSON.stringify(this.state.links))
+      if (this.state.allNotes.length == 0) {
+        this.init()
+      }
     })
   }
 
@@ -48,7 +51,7 @@ class AllNotes extends React.Component {
       
     })
     this.setState({titleMap:titleMap})
-    console.log("tit;emap",this.state.titleMap)
+    console.log("titlemap" ,this.state.titleMap)
   }
 
   // driver function
@@ -202,11 +205,6 @@ class AllNotes extends React.Component {
         this.populateTreeData()
         this.saveLinks()
         // this.props.history.push("/")
-      })
-      .then(() => {
-        if(this.state.AllNotes === undefined) {
-          this.init()
-        }
       })
     })
     .catch(err => {

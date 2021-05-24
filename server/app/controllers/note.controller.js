@@ -175,6 +175,9 @@ exports.delete = (req, res) => {
         .then(() => {
             deleteSubtree(req.params.noteId)
         })
+        .catch(() => {
+            deleteSubtree(req.params.noteId)
+        })
     })
     .catch(function(err) {
         console.log("Update Error")
