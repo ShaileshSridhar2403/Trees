@@ -19,7 +19,7 @@ class RichTextEditor extends React.Component {
     this.state = {
       _id: '',
       title: '',
-      titleContent :'',
+      titleContent:'',
       bodyContent: '',
       theme: 'snow'
     }
@@ -29,13 +29,12 @@ class RichTextEditor extends React.Component {
   }
 
   componentDidMount() {
-    console.log("Logging 1")
     var curr_id = localStorage.getItem("current_id");
     console.log("Accessing id for",curr_id)
     this.quillRef_body = this.reactQuillRef_body.getEditor();
     this.quillRef_title = this.reactQuillRef_title.getEditor();
     // var curr_id = localStorage.getItem("current_id");
-    
+
     axios
     // .get("/api/notes/" + this.props.match.params.id)
     .get("/api/notes/" + curr_id)
@@ -150,7 +149,7 @@ RichTextEditor.modules1 = {
      {'indent': '-1'}, {'indent': '+1'}],
     ['link', 'image', 'video'],
     ['clean']
-    
+
   ],
   clipboard: {
     // toggle to add extra line breaks when pasting HTML:
@@ -164,7 +163,7 @@ RichTextEditor.modules1 = {
           // this.quillRef_title.setSelection(null)
           // this.quillRef_body.focus()
           // this.quillRef_body.setSelection(0,1)
-          
+
         },
       },
       "header enter": {
@@ -183,11 +182,11 @@ RichTextEditor.modules2 = {
     [{ 'header': '1'}, {'header': '2'}, { 'font': [] }],
     [{size: []}],
     ['bold', 'italic', 'underline', 'strike', 'blockquote'],
-    [{'list': 'ordered'}, {'list': 'bullet'}, 
+    [{'list': 'ordered'}, {'list': 'bullet'},
      {'indent': '-1'}, {'indent': '+1'}],
     ['link', 'image', 'video'],
     ['clean']
-    
+
   ],
   clipboard: {
     // toggle to add extra line breaks when pasting HTML:
