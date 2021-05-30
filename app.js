@@ -31,13 +31,26 @@ mongoose.connect(dbConfig.url, {
 
 app.use(cors());
 app.use(express.static(path.join(__dirname, 'client/build')))
-
 app.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname + '/client/build/index.html'))
+  res.sendFile(path.join(__dirname + '/client/build/index.html'))
 })
+
 app.get('/editorapp', (req, res) => {
     res.sendFile(path.join(__dirname + '/client/build/index.html'))
-})
+  })
+
+  app.get('/editorapp2', (req, res) => {
+    res.sendFile(path.join(__dirname + '/client/build/index.html'))
+  })
+  
+
+// app
+
+
+
+// app.get('/editorapp', (req, res) => {
+//     res.sendFile(path.join(__dirname + '/client/build/index.html'))
+//   })
 
 // define a simple route
 // app.get('/', (req, res) => {

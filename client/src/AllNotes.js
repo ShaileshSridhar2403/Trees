@@ -20,15 +20,34 @@ class AllNotes extends React.Component {
     })
   }
 
-  updateTitleMap(){
+  parseTitleToPlainText(formattedTitle){
+    var isValidJSON = true; 
+    try { JSON.parse(formattedTitle) } catch { isValidJSON = false; } 
+    if (!isValidJSON)return formattedTitle
+
+    var plaintextTitle = ''
+    console.log(formattedTitle)
+    var entries = JSON.parse(formattedTitle)["ops"]
+    entries.forEach(function(entry){
+      plaintextTitle = plaintextTitle+entry['insert']
+    })
+    plaintextTitle = plaintextTitle.replace(/\n+$/, "")
+    return plaintextTitle
+  }
+
+  updateTitleMap(){  
+     //this maps note ids to titles (plain Text) to allow easy recursion while creating the tree data structure for rendering
     var titleMap = {}
     this.state.allNotes.forEach(note => {
-      titleMap[note._id] = note.title
+      titleMap[note._id] = this.parseTitleToPlainText(note.title)
+      
     })
     this.setState({titleMap:titleMap})
+    console.log("tit;emap",this.state.titleMap)
   }
   // driver function
   populateTreeData() {
+    //populates the tree data structure
     if (Object.keys(this.state.links).length == 0)return
     var treeData = this.recurseTreeData(this.state.links, Object.keys(this.state.links)[0])
     this.setState({ 
