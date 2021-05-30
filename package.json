@@ -1,7 +1,7 @@
 {
-  "name": "electron-react-node-boilerplate",
+  "name": "trees",
   "version": "1.0.0",
-  "description": "An Electron application with React and Node",
+  "description": "A note-taking application with a tree view",
   "main": "./main.js",
   "homepage": "./",
   "scripts": {
