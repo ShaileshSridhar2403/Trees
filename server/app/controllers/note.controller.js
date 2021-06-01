@@ -13,7 +13,8 @@ exports.create = (req, res) => {
     }
 
     // Create a Note and Save Note in the database
-    notesDb.post({
+    notesDb.put({
+        _id: (Date.now()).toString(),
         title: req.body.title || "Untitled Note", 
         content: req.body.content,
         parent: "",
@@ -211,7 +212,8 @@ exports.addChild = (req,res) => {
     notesDb.get(parent_id).then(function(data) {
         children_array =  data.children
     }).then(() => {
-        notesDb.post({
+        notesDb.put({
+            _id: (Date.now()).toString(),
             title: "Untitled Note",
             content: "",
             parent: parent_id,
@@ -255,7 +257,8 @@ exports.addSibling = (req,res) => {
         var parent_id = data.parent
         notesDb.get(parent_id).then(function(data) {
             var children_array =  data.children
-            notesDb.post({
+            notesDb.put({
+                _id: (Date.now()).toString(),
                 title: "Untitled Note",
                 content: "",
                 parent: parent_id,
