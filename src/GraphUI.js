@@ -4,6 +4,12 @@ import * as d3 from 'd3';
 import * as flextree from 'd3-flextree'
 import { propTypes } from 'react-bootstrap/esm/Image';
 import { useHistory } from 'react-router-dom';
+import { notify } from "react-notify-toast";
+
+function notification(message,time){
+  let colour_info = { background: '#30c10f', text: "#FFFFFF" };
+  notify.show(message, "custom", time, colour_info);
+}
 
 
 function GraphUI({ parentContext }) {
@@ -204,22 +210,30 @@ function GraphUI({ parentContext }) {
         }
 
         function handleAddChild(d, i) {
-          alert("add child")
+          // alert("add child")
+          
           // console.log(this.props)
           parentContext.addChild({ variables: { _id: i.data.id } })
           d.stopPropagation()  // Prevent propagation to parent
+          // notify.show("Child Note added", "success");
+          notification("Child Note Added",1500)
         }
 
         function handleAddSibling(d, i) {
-          alert("add sibling")
+          // alert("add sibling")
           parentContext.addSibling({ variables: { _id: i.data.id } })
           d.stopPropagation()  // Prevent propagation to parent
+          // notify.show("Sibling Note Added", "success")
+          notification("Sibling Note Added",1500)
+          
         }
 
         function handleEdit(d, i) {
           // const history = useHistory();
           localStorage.setItem("current_id", i.data.id);
-          alert("edit")
+          // alert("edit")
+          // notify.show("Redirecting to Edit page...","success")
+          notification("Redirecting to Edit page..")
           // window.location.href = "/"
           window.location.href = "http://localhost:8000/editorapp"
           
@@ -229,9 +243,10 @@ function GraphUI({ parentContext }) {
         }
 
         function handleDelete(d, i) {
-          alert("delete")
           parentContext.deleteNote({ variables: { _id: i.data.id } })
           d.stopPropagation()  // Prevent propagation to parent
+          // notify.show("Child and its descendants successfully deleted","success")
+          notification("Note and its descendents deleted",1500)
         }
 
         // Remove any exiting nodes

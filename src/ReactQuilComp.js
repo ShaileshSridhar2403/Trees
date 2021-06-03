@@ -4,6 +4,7 @@ import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
 import 'react-quill/dist/quill.bubble.css';
 import './ReactQuilComp.css'
+import { notify } from "react-notify-toast";
 
 
 class RichTextEditor extends React.Component {
@@ -63,6 +64,7 @@ class RichTextEditor extends React.Component {
     .then(res => {
       console.log(res.data)
       // this.props.history.push("/");
+      notify.show("Note was successfully Saved", "success");
     })
   }
 
