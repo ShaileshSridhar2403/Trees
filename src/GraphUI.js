@@ -1,5 +1,6 @@
 import { useD3 } from './hooks/useD3';
 import React from "react";
+import axios from "axios";
 import * as d3 from 'd3';
 import * as flextree from 'd3-flextree'
 import {
@@ -239,16 +240,14 @@ function GraphUI({ parentContext }) {
 
         function handleEdit(d, i) {
           // const history = useHistory();
-          localStorage.setItem("current_id", i.data.id);
-          // alert("edit")
-          // notify.show("Redirecting to Edit page...","success")
-          notification("Redirecting to Edit page..")
-          // window.location.href = "/"
-          window.location.href = "http://localhost:8000/editorapp"
-          
-          // history.push("note/" + i.data.id)
-          // history.push("note/" + i.data.id)
-          d.stopPropagation()  // Prevent propagation to parent
+          // localStorage.setItem("current_id", i.data.id);
+          axios
+          .put("http://localhost:8000/cid", {'cid': i.data.id})
+          .then(res => {
+            notification("Redirecting to Edit page..")
+            window.location.href = "http://localhost:8000/editorapp"
+            d.stopPropagation()  // Prevent propagation to parent
+          })
         }
 
         function handleDelete(d, i) {
