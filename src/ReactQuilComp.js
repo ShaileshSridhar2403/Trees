@@ -19,8 +19,8 @@ class RichTextEditor extends React.Component {
     this.state = {
       _id: '',
       title: '',
-      titleContent:'',
-      bodyContent: '',
+      content: '',
+      curr_id: '',
       theme: 'snow'
     }
 
@@ -29,34 +29,37 @@ class RichTextEditor extends React.Component {
   }
 
   componentDidMount() {
-    var curr_id = localStorage.getItem("current_id");
-    console.log("Accessing id for",curr_id)
-    this.quillRef_body = this.reactQuillRef_body.getEditor();
-    this.quillRef_title = this.reactQuillRef_title.getEditor();
     // var curr_id = localStorage.getItem("current_id");
-
     axios
-    // .get("/api/notes/" + this.props.match.params.id)
-    .get("http://localhost:8000/notes/" + curr_id)
+    .get("http://localhost:8000/cid")
     .then(res => {
       this.setState({
-        _id: res.data._id,
-        title: res.data.title,
-        bodyContent: res.data.content
+        curr_id: res.data.cid
       })
-      console.log("contents 2",res.data.content)
+      console.log("Accessing id for", this.state.curr_id)
+      this.quillRef_body = this.reactQuillRef_body.getEditor();
+      this.quillRef_title = this.reactQuillRef_title.getEditor();
 
-    })
-    .then(() => {
-      // this.removeEnterFunctionalityFromTitle()
-      this.loadText()
+      axios
+      // .get("/api/notes/" + this.props.match.params.id)
+      .get("http://localhost:8000/notes/" + this.state.curr_id)
+      .then(res => {
+        this.setState({
+          _id: res.data._id,
+          title: res.data.title,
+          content: res.data.content
+        })
+        console.log("contents", res.data.content)
+        // this.removeEnterFunctionalityFromTitle()
+        this.loadText()
+      })
     })
   }
 
   updateNote = () => {
     const editedNote = {
       title: this.state.title || 'title',
-      content: this.state.bodyContent,
+      content: this.state.content,
     }
     axios
     .put("http://localhost:8000/notes/" + this.state._id, editedNote)
@@ -73,13 +76,13 @@ class RichTextEditor extends React.Component {
   // }
 
   loadText = () => {
-    console.log("contents loadText",this.state.bodyContent)
-    this.quillRef_body.setContents(JSON.parse(this.state.bodyContent)) //here
+    console.log("contents loadText", this.state.content)
+    this.quillRef_body.setContents(JSON.parse(this.state.content)) //here
     this.quillRef_title.setContents(JSON.parse(this.state.title))
   }
 
   handleBodyChange (content, delta, source, editor) {
-    this.state.bodyContent = JSON.stringify(editor.getContents()) //here
+    this.state.content = JSON.stringify(editor.getContents()) //here
   }
 
   handleTitleChange (content, delta, source, editor) {
