@@ -32,7 +32,7 @@ function GraphUI({ parentContext }) {
         .attr("width", width)
         .attr("height", height)
         .append("g")
-        .attr('transform', `translate(5000,1)`)
+        .attr('transform', `translate(5000, 500)`)
         // .attr("display","block")
         // .attr("margin","auto")
         // .attr("left","10px")
@@ -354,7 +354,7 @@ function GraphUI({ parentContext }) {
 
   return (
     
-    <svg preserveAspectRatio="xMaxYMid meet" viewBox={`0 0 10000 1000`}
+    <svg preserveAspectRatio="xMidYMid meet" viewBox={`0 0 10000 5000`}
 
       ref={ref}
       style={{
@@ -366,7 +366,6 @@ function GraphUI({ parentContext }) {
         marginTop: "auto",
         marginBottom:"auto",
         display: "block",
-
       }}
     >
       {/* <g className="plot-area" /> */}
