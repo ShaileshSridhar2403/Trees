@@ -2,6 +2,8 @@ import axios from "axios";
 import GraphUI from "./GraphUI"
 import React from "react";
 
+const orig_width = 1500
+const viewbox_width = 10000
 
 class AllNotes extends React.Component {
   state = {
@@ -74,7 +76,7 @@ class AllNotes extends React.Component {
       return {
         "name": this.state.titleMap[id],
         "id": id,
-        "size": [150, 150],
+        "size": [(150/orig_width)*viewbox_width, (150/orig_width)*viewbox_width],
         "children": []
       }
     }
@@ -82,7 +84,7 @@ class AllNotes extends React.Component {
     var treeData = {
       "name": this.state.titleMap[id],
       "id": id,
-      "size": [150, 150],
+      "size": [(150/orig_width)*viewbox_width, (150/orig_width)*viewbox_width],
       "children": []
     }
     links[id].forEach(childId => {

@@ -2,6 +2,11 @@ import { useD3 } from './hooks/useD3';
 import React from "react";
 import * as d3 from 'd3';
 import * as flextree from 'd3-flextree'
+import {
+  useWindowSize,
+  useWindowWidth,
+  useWindowHeight,
+} from '@react-hook/window-size'
 import { propTypes } from 'react-bootstrap/esm/Image';
 import { useHistory } from 'react-router-dom';
 import { notify } from "react-notify-toast";
@@ -10,7 +15,8 @@ function notification(message,time){
   let colour_info = { background: '#30c10f', text: "#FFFFFF" };
   notify.show(message, "custom", time, colour_info);
 }
-
+const orig_width = 1500
+const viewbox_width = 10000
 
 function GraphUI({ parentContext }) {
   const ref = useD3(
@@ -26,7 +32,10 @@ function GraphUI({ parentContext }) {
         .attr("width", width)
         .attr("height", height)
         .append("g")
-        .attr('transform', `translate(${width / 2},100)`)
+        .attr('transform', `translate(5000,1)`)
+        // .attr("display","block")
+        // .attr("margin","auto")
+        // .attr("left","10px")
 
 
       const duration = 750;
@@ -88,7 +97,7 @@ function GraphUI({ parentContext }) {
         // Add labels for the nodes
         nodeEnter.append('text')
           .attr('pointer-events', 'none')
-          .attr('dy', '0.35em')
+        .attr('dy', `${0.35}em`)
           .text(function (d) {
             return d.data.name;
           })
@@ -100,10 +109,10 @@ function GraphUI({ parentContext }) {
 
         // Update
         var nodeUpdate = nodeEnter.merge(node)
-          .attr("fill", "#fff")
+          .attr("fill", "black")
           .attr("stroke", "black")
-          .attr("stroke-width", "3px;")
-          .style('font', '12px consolas')
+          .attr("stroke-width", `${(3/orig_width)*viewbox_width}px;`)
+          .style('font', `${(12/orig_width)*viewbox_width}px consolas`)
           .on("click", function (d, i) {
             timer = setTimeout(() => {
               if (!prevent) {
@@ -128,7 +137,7 @@ function GraphUI({ parentContext }) {
 
         // Update the node attributes and style
         nodeUpdate.select('circle.node')
-          .attr('r', 50)
+          .attr('r', (50/orig_width)*viewbox_width)
           .style("fill", function (d) {
             return d._children ? "lightsteelblue" : "#fff";
           })
@@ -145,23 +154,23 @@ function GraphUI({ parentContext }) {
           if (nodeUpdate.select('#button' + i.data.id).empty()) {
             // Add buttons
             var arc1 = d3.arc()
-              .innerRadius(55)
-              .outerRadius(75)
+              .innerRadius((55/orig_width)*viewbox_width)
+              .outerRadius((75/orig_width)*viewbox_width)
               .startAngle(0)
               .endAngle(30 * Math.PI / 180)
             var arc2 = d3.arc()
-              .innerRadius(55)
-              .outerRadius(75)
+              .innerRadius((55/orig_width)*viewbox_width)
+              .outerRadius((75/orig_width)*viewbox_width)
               .startAngle(35 * Math.PI / 180)
               .endAngle(65 * Math.PI / 180)
             var arc3 = d3.arc()
-              .innerRadius(55)
-              .outerRadius(75)
+              .innerRadius((55/orig_width)*viewbox_width)
+              .outerRadius((75/orig_width)*viewbox_width)
               .startAngle(70 * Math.PI / 180)
               .endAngle(100 * Math.PI / 180)
             var arc4 = d3.arc()
-              .innerRadius(55)
-              .outerRadius(75)
+              .innerRadius((55/orig_width)*viewbox_width)
+              .outerRadius((75/orig_width)*viewbox_width)
               .startAngle(105 * Math.PI / 180)
               .endAngle(135 * Math.PI / 180)
 
@@ -289,7 +298,7 @@ function GraphUI({ parentContext }) {
         var linkUpdate = linkEnter.merge(link)
           .attr("fill", "none")
           .attr("stroke", "#ccc")
-          .attr("stroke-width", "2px")
+          .attr("stroke-width", `${2/orig_width*viewbox_width}px`)
 
         // Transition back to the parent element position
         linkUpdate.transition()
@@ -344,17 +353,26 @@ function GraphUI({ parentContext }) {
   );
 
   return (
-    <svg
+    
+    <svg preserveAspectRatio="xMaxYMid meet" viewBox={`0 0 10000 1000`}
+
       ref={ref}
       style={{
-        height: 1000,
-        width: "100%",
-        marginRight: "0px",
-        marginLeft: "0px",
+        // height: "1000",
+        height: useWindowHeight(),
+        width: useWindowWidth(),
+        marginRight: "auto",
+        marginLeft: "auto",
+        marginTop: "auto",
+        marginBottom:"auto",
+        display: "block",
+
       }}
     >
       {/* <g className="plot-area" /> */}
     </svg>
+   
+
   );
 }
 
