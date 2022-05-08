@@ -1,17 +1,23 @@
-# electron-react-node-boilerblate
+# Trees
 
-Walkthrough described at https://medium.com/jstack-eu/using-electron-with-react-and-node-b498fbf23272
+A hierarchical tree based note-taking/ planner app
 
-**Description**
+**What is it?**
 
-Boilerplate project to quickly get started with Electron, React and Node
-containing following features:
 
-- Electron v5
-- React using react-app-rewired
-- Node using babel to transpile
-- Live reload
-- Packaging of Electron app fully functional
+**How to get it running**
+
+1. Using npm
+
+- Clone this repositry and `cd` into it.
+`cd Trees`
+
+- Build the app with npm
+` npm run react-build`
+`npm run server-build`
+
+- Run the app
+`npm start
 
 **How to use**
 
