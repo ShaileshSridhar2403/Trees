@@ -112,7 +112,7 @@ class RichTextEditor extends React.Component {
           id="title"
           theme='bubble'
           onChange={this.handleTitleChange}
-          modules={RichTextEditor.modules1}
+          modules={RichTextEditor.modules_title}
           formats={RichTextEditor.formats}
           keyboard = {RichTextEditor.titleKeyboard}
         />
@@ -120,7 +120,7 @@ class RichTextEditor extends React.Component {
           ref={(el) => { this.reactQuillRef_body = el }}
           theme={this.state.theme}
           onChange={this.handleBodyChange}
-          modules={RichTextEditor.modules2}
+          modules={RichTextEditor.modules_body}
           formats={RichTextEditor.formats}
         />
         {/* <div className="themeSwitcher">
@@ -142,7 +142,7 @@ class RichTextEditor extends React.Component {
  * Quill modules to attach to editor
  * See https://quilljs.com/docs/modules/ for complete options
  */
-RichTextEditor.modules1 = {
+RichTextEditor.modules_title = {
   toolbar: [
     [{ 'header': '1'}, {'header': '2'}, { 'font': [] }],
     [{size: []}],
@@ -179,7 +179,7 @@ RichTextEditor.modules1 = {
     },
   }
 }
-RichTextEditor.modules2 = {
+RichTextEditor.modules_body = {
   toolbar: [
     [{ 'header': '1'}, {'header': '2'}, { 'font': [] }],
     [{size: []}],
