@@ -1,6 +1,6 @@
 # Trees
 
-A hierarchical tree based note-taking/ planner app
+A hierarchical tree based note-taking / planner app
 
 **What is it?**
 
@@ -9,22 +9,22 @@ A hierarchical tree based note-taking/ planner app
 
 1. Using npm
 
-- Clone this repositry and `cd` into it.
-`cd Trees`
+- Clone this repositry and `cd` into it. \
+`cd Trees` 
 
-- Build the app with npm
-`npm run react-build`
-`npm run server-build`
+- Build the app with npm \
+`npm run react-build` \
+`npm run server-build` 
 
-- Run the app
-`npm start
+- Run the app \
+`npm start`
 
 2. Using a Downloadable executable (Only supported on Windows and Ubuntu right now )
-- Download the executable corresponding to your operating system from here : (add link here)
+- Download the executable corresponding to your operating system from here : (add link here) and run
 
    Ubuntu Users:
    - Download trees-v0.AppImage :(link)
-   - make the file executable with:
+   - make the file executable with: \
       `chmod u+x trees-v0.AppImage`
    - Run with ./trees-v0.AppImage
 
