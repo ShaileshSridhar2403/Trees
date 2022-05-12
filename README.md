@@ -22,15 +22,15 @@ A hierarchical tree based note-taking/ planner app
 2. Using a Downloadable executable (Only supported on Windows and Ubuntu right now )
 - Download the executable corresponding to your operating system from here : (add link here)
 
-Ubuntu Users:
-- Download trees-v0.AppImage :(link)
-- make the file executable with:
-   `chmod u+x trees-v0.AppImage`
-- Run with ./trees-v0.AppImage
+   Ubuntu Users:
+   - Download trees-v0.AppImage :(link)
+   - make the file executable with:
+      `chmod u+x trees-v0.AppImage`
+   - Run with ./trees-v0.AppImage
 
-Windows Users:
-- Download trees-v0.exe : (link)
-- Run the file (double click)
+   Windows Users:
+   - Download trees-v0.exe : (link)
+   - Run the file (double click)
 
 **How to use** 
 
