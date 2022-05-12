@@ -31,9 +31,9 @@ function App() {
             </Link>
 
             {/* <Link to="/newnote" className="navbar-item"> */}
-            <Link to="/editorapp" className="navbar-item">
+            {/* <Link to="/editorapp" className="navbar-item">
               New Note
-            </Link>
+            </Link> */}
           </div>
         </nav>
 
