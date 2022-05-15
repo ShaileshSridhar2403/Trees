@@ -23,12 +23,18 @@ function App() {
             <Link to="/" className="navbar-item">
               Trees
             </Link>
+            {/* <div clasName = "navbar-item"> Edit </div>
+            <div clasName = "navbar-item"> Add Child </div> */}
           </div>
+          
+         
+
 
           <div className="navbar-end">
             <Link to="/" className="navbar-item">
               All Notes
             </Link>
+            
 
             {/* <Link to="/newnote" className="navbar-item"> */}
             {/* <Link to="/editorapp" className="navbar-item">
@@ -37,6 +43,33 @@ function App() {
           </div>
         </nav>
 
+        <nav
+          className="navbar App-header"
+          role="navigation"
+          aria-label="main navigation"
+        >
+          <div className="navbar-brand">
+            Legend 
+            {/* <div clasName = "navbar-item"> Edit </div>
+            <div clasName = "navbar-item"> Add Child </div> */}
+          </div>
+
+          <div className="navbar-brand">
+            <span className="navbar-AddChild">Add Child</span>
+          </div>
+
+          <div className="navbar-brand">
+            <span className="navbar-AddSibling">Add Sibling</span>
+          </div>
+          
+          <div className="navbar-brand">
+           <span className="navbar-Edit">Edit </span>
+          </div>
+            
+          <div className="navbar-brand">
+            <span className="navbar-Delete">Delete</span>
+          </div>
+        </nav>
         <Route exact path="/" component={AllNotes} />
         {/* <Route path="/newnote" component={NewNote} /> */}
         {/* <Route path="note/:id" component={RichTextEditor} /> */}
