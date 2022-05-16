@@ -1,6 +1,7 @@
 import axios from "axios";
 import GraphUI from "./GraphUI"
 import React from "react";
+import Legend from "./Legend"
 
 const orig_width = 1500
 const viewbox_width = 10000
@@ -272,6 +273,7 @@ class AllNotes extends React.Component {
     return (
       <div className="App">
         <header className="App-header">
+          <Legend />
           <GraphUI parentContext={this} />
         </header>
       </div>
