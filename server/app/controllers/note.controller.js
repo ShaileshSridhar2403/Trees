@@ -7,9 +7,10 @@ var notesDb = new PouchDB('notesDb');
 exports.create = (req, res) => {
     // Validate request
     if(!req.body.content) {
-        return res.status(400).send({
-            message: "Note content can not be empty"
-        });
+        // return res.status(400).send({
+        //     message: "Note content can not be empty"
+        // });
+        req.body.content = "{\"ops\":[{\"insert\":\"\\n\"}]}";
     }
 
     // Create a Note and Save Note in the database
@@ -68,9 +69,10 @@ exports.findOne = (req, res) => {
 exports.update = (req, res) => {
     // Validate Request
     if(!req.body.content) {
-        return res.status(400).send({
-            message: "Note content can not be empty"
-        });
+        // return res.status(400).send({
+        //     message: "Note content can not be empty"
+        // });
+        req.body.content = "{\"ops\":[{\"insert\":\"\\n\"}]}";
     }
 
     // Find note and update it with the request body
