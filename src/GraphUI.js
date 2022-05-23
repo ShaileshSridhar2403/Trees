@@ -16,6 +16,12 @@ function notification(message,time){
   let colour_info = { background: '#30c10f', text: "#FFFFFF" };
   notify.show(message, "custom", time, colour_info);
 }
+
+function errorNotification (message,time){
+  let colour_info = { background: '#135eec', text: "#FFFFFF" };
+  notify.show(message, "custom", time, colour_info);
+}
+
 const orig_width = 1500
 const viewbox_width = 10000
 
@@ -225,6 +231,7 @@ function GraphUI({ parentContext }) {
           // console.log(this.props)
           parentContext.addChild({ variables: { _id: i.data.id } })
           d.stopPropagation()  // Prevent propagation to parent
+
           // notify.show("Child Note added", "success");
           notification("Child Note Added",1500)
         }
@@ -234,7 +241,12 @@ function GraphUI({ parentContext }) {
           parentContext.addSibling({ variables: { _id: i.data.id } })
           d.stopPropagation()  // Prevent propagation to parent
           // notify.show("Sibling Note Added", "success")
-          notification("Sibling Note Added",1500)
+          if (i.depth != 0){
+            notification("Sibling Note Added",1500)
+          }
+          else{
+            errorNotification("The Root Note can not have siblings",2000)
+          }
           
         }
 
