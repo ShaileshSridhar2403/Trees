@@ -1,6 +1,7 @@
 module.exports = (app) => {
     const notes = require('../controllers/note.controller.js');
     const links = require('../controllers/links.controller.js');
+    const cid = require('../controllers/cid.controller.js')
 
     // Create a new Note
     app.post('/notes', notes.create);
@@ -32,7 +33,11 @@ module.exports = (app) => {
     // Save Links
     app.post('/links', links.create);
 
+    // Get Current ID
+    app.get('/cid', cid.findOne);
 
+    // Save Current ID
+    app.put('/cid', cid.update);
 
     //With api prefix(for 'build')
 

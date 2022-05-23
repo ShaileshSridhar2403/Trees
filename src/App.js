@@ -40,6 +40,7 @@ function App() {
             </Link> */}
           </div>
         </nav>
+
         <Route exact path="/" component={AllNotes} />
         {/* <Route path="/newnote" component={NewNote} /> */}
         {/* <Route path="note/:id" component={RichTextEditor} /> */}
