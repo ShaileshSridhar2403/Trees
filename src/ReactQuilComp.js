@@ -1,11 +1,61 @@
 import React from 'react';
 import axios from "axios";
-import ReactQuill from 'react-quill';
+import ReactQuill, { Quill } from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
 import 'react-quill/dist/quill.bubble.css';
 import './ReactQuilComp.css'
 import { notify } from "react-notify-toast";
 
+
+const CustomSave = () => <span>🖫</span>;
+
+/*
+ * Custom toolbar component including the custom save button and dropdowns
+ */
+const CustomToolbar = () => (
+  <div id="title-toolbar">
+    <select className="ql-font">
+      <option value="arial" selected>
+        Arial
+      </option>
+      <option value="comic-sans">Comic Sans</option>
+      <option value="courier-new">Courier New</option>
+      <option value="georgia">Georgia</option>
+      <option value="helvetica">Helvetica</option>
+      <option value="lucida">Lucida</option>
+    </select>
+    <select className="ql-size">
+      <option value="extra-small">Size 1</option>
+      <option value="small">Size 2</option>
+      <option value="medium" selected>Size 3</option>
+      <option value="large">Size 4</option>
+      <option value="extra-large">Size 5</option>
+    </select>
+    <select className="ql-align" />
+    <select className="ql-color" />
+    <button className="ql-clean" />
+    <button className="ql-updateNote">
+      <CustomSave/>
+    </button>
+  </div>
+);
+
+// Add sizes to whitelist and register them
+const Size = Quill.import("formats/size");
+Size.whitelist = ["extra-small", "small", "medium", "large", "extra-large"];
+Quill.register(Size, true);
+
+// Add fonts to whitelist and register them
+const Font = Quill.import("formats/font");
+Font.whitelist = [
+  "arial",
+  "comic-sans",
+  "courier-new",
+  "georgia",
+  "helvetica",
+  "lucida"
+];
+Quill.register(Font, true);
 
 class RichTextEditor extends React.Component {
   constructor(props) {
@@ -91,9 +141,9 @@ class RichTextEditor extends React.Component {
     //Set title length to a maximum value
     var limit = 10
     if (editor.getLength() > limit) {
-          this.quillRef_title.deleteText(limit, editor.getLength());
-        }
-    //possibly put an alert here
+      this.quillRef_title.deleteText(limit, editor.getLength());
+    }
+    // possibly put an alert here
   }
 
   // handleThemeChange (newTheme) {
@@ -103,6 +153,14 @@ class RichTextEditor extends React.Component {
 
 
 
+  modules_body = {
+    toolbar: {
+      container: "#title-toolbar",
+      handlers: {
+        updateNote: this.updateNote
+      }
+    }
+  };
 
   render() {
     return (
@@ -116,11 +174,12 @@ class RichTextEditor extends React.Component {
           formats={RichTextEditor.formats}
           keyboard = {RichTextEditor.titleKeyboard}
         />
+        <CustomToolbar/>
         <ReactQuill
           ref={(el) => { this.reactQuillRef_body = el }}
           theme={this.state.theme}
           onChange={this.handleBodyChange}
-          modules={RichTextEditor.modules_body}
+          modules={this.modules_body}
           formats={RichTextEditor.formats}
         />
         {/* <div className="themeSwitcher">
@@ -144,14 +203,14 @@ class RichTextEditor extends React.Component {
  */
 RichTextEditor.modules_title = {
   toolbar: [
-    [{ 'header': '1'}, {'header': '2'}, { 'font': [] }],
-    [{size: []}],
+    [{ 'header': '1'}, {'header': '2'}],
     ['bold', 'italic', 'underline', 'strike', 'blockquote'],
-    [{'list': 'ordered'}, {'list': 'bullet'}, 
-     {'indent': '-1'}, {'indent': '+1'}],
+    [
+      {'list': 'ordered'}, {'list': 'bullet'}, 
+      {'indent': '-1'}, {'indent': '+1'}
+    ],
     ['link', 'image', 'video'],
     ['clean']
-
   ],
   clipboard: {
     // toggle to add extra line breaks when pasting HTML:
@@ -179,22 +238,22 @@ RichTextEditor.modules_title = {
     },
   }
 }
-RichTextEditor.modules_body = {
-  toolbar: [
-    [{ 'header': '1'}, {'header': '2'}, { 'font': [] }],
-    [{size: []}],
-    ['bold', 'italic', 'underline', 'strike', 'blockquote'],
-    [{'list': 'ordered'}, {'list': 'bullet'},
-     {'indent': '-1'}, {'indent': '+1'}],
-    ['link', 'image', 'video'],
-    ['clean']
+// RichTextEditor.modules_body = {
+//   toolbar: [
+//     [{ 'header': '1'}, {'header': '2'}, { 'font': [] }],
+//     [{size: []}],
+//     ['bold', 'italic', 'underline', 'strike', 'blockquote'],
+//     [{'list': 'ordered'}, {'list': 'bullet'},
+//      {'indent': '-1'}, {'indent': '+1'}],
+//     ['link', 'image', 'video'],
+//     ['clean']
 
-  ],
-  clipboard: {
-    // toggle to add extra line breaks when pasting HTML:
-    matchVisual: false,
-  }
-}
+//   ],
+//   clipboard: {
+//     // toggle to add extra line breaks when pasting HTML:
+//     matchVisual: false,
+//   }
+// }
 
 /* 
  * Quill editor formats
@@ -210,15 +269,15 @@ RichTextEditor.formats = [
 RichTextEditor.titleKeyboard = {
   keyboard: {
     bindings: {
-        tab: false,
-        handleEnter: {
-            key: 13,
-            handler: function() {
-                // Do nothing
-            }
+      tab: false,
+      handleEnter: {
+        key: 13,
+        handler: function() {
+          // Do nothing
         }
+      }
     }
-}
+  }
 }
 
 // quill.on('text-change', function (delta, old, source) {
@@ -227,5 +286,6 @@ RichTextEditor.titleKeyboard = {
 //   }
 // });
 
+// reference: https://codesandbox.io/s/6x93pk4rp3
 
 export default RichTextEditor;
