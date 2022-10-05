@@ -1,5 +1,7 @@
 # Trees - A novel hierarchical note-taking app designed to make note taking more intuitive
 
+## Stay tuned! Detailed Readme coming soon
+
 <!---
 Walkthrough described at https://medium.com/jstack-eu/using-electron-with-react-and-node-b498fbf23272
 
