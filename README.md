@@ -1,5 +1,6 @@
-# electron-react-node-boilerblate
+# Trees - A novel hierarchical note-taking app designed to make note taking more intuitive
 
+<!---
 Walkthrough described at https://medium.com/jstack-eu/using-electron-with-react-and-node-b498fbf23272
 
 **Description**
@@ -65,5 +66,6 @@ An overview of the folder structure can be found below:
 ```
 
 ## License
+--->
 
 [CC0 1.0 (Public Domain)](LICENSE.md)
